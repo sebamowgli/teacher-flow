@@ -1,0 +1,1926 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeacherFlow — 교사용 감성 하루 일과 & 수업 플래너</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Pretendard & Noto Serif KR (감성 세리프 포인트) -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* 기본 폰트 및 CSS 변수 기반 3가지 감성 테마 시스템 */
+        :root {
+            --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-serif: 'Noto Serif KR', Georgia, serif;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            transition: background-color 0.35s ease, color 0.35s ease;
+            overflow-x: hidden;
+        }
+
+        .serif-title {
+            font-family: var(--font-serif);
+        }
+
+        /* =========================================================
+           테마 1: 따뜻한 종이 다이어리 (Warm Paper) - 기본값
+           ========================================================= */
+        body[data-theme="paper"] {
+            --bg-page: #FAF8F5;
+            --bg-header: rgba(250, 248, 245, 0.88);
+            --bg-card: #FFFFFF;
+            --bg-card-subtle: #F4EFE8;
+            --border-card: #E6DFD3;
+            --text-primary: #3C352E;
+            --text-secondary: #7A7065;
+            --text-muted: #A3988C;
+            --accent-main: #B85D3B;      /* 테라코타 */
+            --accent-main-hover: #9E4B2C;
+            --accent-soft: #F7EAE3;
+            --hero-bg: linear-gradient(135deg, #4A3F35 0%, #635345 100%);
+            --hero-text: #FDFBF7;
+            --hero-sub: #E5DDD3;
+            --card-radius: 20px;
+            --card-shadow: 0 4px 20px -4px rgba(60, 53, 46, 0.06);
+            --backdrop-blur: none;
+
+            /* 일정 유형별 어스 톤(Earth Tone) */
+            --class-bg: #FDF8F4;
+            --class-border: #E8C7B5;
+            --class-badge-bg: #F6E3D7;
+            --class-badge-text: #9E4728;
+
+            --event-bg: #FBF9F2;
+            --event-border: #E5D4A1;
+            --event-badge-bg: #F5EBC8;
+            --event-badge-text: #8C6A1B;
+
+            --todo-bg: #F6F9F4;
+            --todo-border: #C5D6BE;
+            --todo-badge-bg: #E3EDE0;
+            --todo-badge-text: #3E6636;
+
+            --gap-bg: #F5F1EB;
+            --gap-border: #D6CBBC;
+            --gap-text: #6E6256;
+        }
+
+        /* =========================================================
+           테마 2: 숲속 아침 산책 (Forest Breeze)
+           ========================================================= */
+        body[data-theme="forest"] {
+            --bg-page: #F1F6F3;
+            --bg-header: rgba(241, 246, 243, 0.82);
+            --bg-card: rgba(255, 255, 255, 0.78);
+            --bg-card-subtle: rgba(232, 242, 236, 0.7);
+            --border-card: rgba(182, 207, 192, 0.65);
+            --text-primary: #1E352B;
+            --text-secondary: #4E6B5E;
+            --text-muted: #7C998B;
+            --accent-main: #2E6F56;      /* 딥 포레스트 */
+            --accent-main-hover: #225642;
+            --accent-soft: #E1EFE8;
+            --hero-bg: linear-gradient(135deg, #254E3E 0%, #3A725B 100%);
+            --hero-text: #F4FAF6;
+            --hero-sub: #CBE2D5;
+            --card-radius: 22px;
+            --card-shadow: 0 8px 28px -6px rgba(30, 53, 43, 0.07);
+            --backdrop-blur: blur(12px);
+
+            /* 일정 유형별 세이지 & 내추럴 톤 */
+            --class-bg: rgba(238, 247, 242, 0.85);
+            --class-border: #B7D8C6;
+            --class-badge-bg: #D5ECE0;
+            --class-badge-text: #1F5C43;
+
+            --event-bg: rgba(242, 246, 250, 0.85);
+            --event-border: #BDD2E4;
+            --event-badge-bg: #DCE9F5;
+            --event-badge-text: #2C587A;
+
+            --todo-bg: rgba(255, 255, 255, 0.9);
+            --todo-border: #CBE0D4;
+            --todo-badge-bg: #E6F2EC;
+            --todo-badge-text: #356850;
+
+            --gap-bg: rgba(227, 240, 233, 0.65);
+            --gap-border: #A8C9B7;
+            --gap-text: #2E634D;
+        }
+
+        /* =========================================================
+           테마 3: 포근한 파스텔 스튜디오 (Soft Pastel)
+           ========================================================= */
+        body[data-theme="pastel"] {
+            --bg-page: #FAF7FC;
+            --bg-header: rgba(250, 247, 252, 0.85);
+            --bg-card: #FFFFFF;
+            --bg-card-subtle: #F4EFFA;
+            --border-card: #E9E0F5;
+            --text-primary: #362E47;
+            --text-secondary: #6F6585;
+            --text-muted: #9D93B2;
+            --accent-main: #7C65B8;      /* 소프트 라벤더 */
+            --accent-main-hover: #654FA3;
+            --accent-soft: #EFE9FA;
+            --hero-bg: linear-gradient(135deg, #6B5B95 0%, #9B7EBD 55%, #D49A9A 100%);
+            --hero-text: #FFFFFF;
+            --hero-sub: #F3ECFA;
+            --card-radius: 24px;
+            --card-shadow: 0 8px 26px -4px rgba(107, 91, 149, 0.08);
+            --backdrop-blur: none;
+
+            /* 일정 유형별 파스텔 톤 */
+            --class-bg: #F7F3FD;
+            --class-border: #DDD0F5;
+            --class-badge-bg: #EAE0FA;
+            --class-badge-text: #5E439C;
+
+            --event-bg: #FFF5F3;
+            --event-border: #F7D3CC;
+            --event-badge-bg: #FDE3DE;
+            --event-badge-text: #A84A3B;
+
+            --todo-bg: #F2F9FD;
+            --todo-border: #C9E3F5;
+            --todo-badge-bg: #DDF0FC;
+            --todo-badge-text: #2D678F;
+
+            --gap-bg: #F6F2FB;
+            --gap-border: #D5C6EC;
+            --gap-text: #654E96;
+        }
+
+        /* 테마 변수 적용 유틸리티 클래스 */
+        .theme-page {
+            background-color: var(--bg-page);
+            color: var(--text-primary);
+        }
+        .theme-header {
+            background-color: var(--bg-header);
+            border-bottom: 1px solid var(--border-card);
+            backdrop-filter: blur(12px);
+        }
+        .theme-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: var(--card-radius);
+            box-shadow: var(--card-shadow);
+            backdrop-filter: var(--backdrop-blur);
+            transition: all 0.3s ease;
+        }
+        .theme-card-subtle {
+            background-color: var(--bg-card-subtle);
+            border: 1px solid var(--border-card);
+            border-radius: calc(var(--card-radius) - 4px);
+        }
+        .theme-hero {
+            background: var(--hero-bg);
+            color: var(--hero-text);
+            border-radius: calc(var(--card-radius) + 4px);
+            box-shadow: var(--card-shadow);
+        }
+        .theme-btn-primary {
+            background-color: var(--accent-main);
+            color: #FFFFFF;
+            transition: all 0.2s ease;
+        }
+        .theme-btn-primary:hover {
+            background-color: var(--accent-main-hover);
+            transform: translateY(-1px);
+        }
+        .theme-btn-soft {
+            background-color: var(--accent-soft);
+            color: var(--accent-main);
+            transition: all 0.2s ease;
+        }
+        .theme-btn-soft:hover {
+            filter: brightness(0.96);
+        }
+
+        /* 일정 카드 스타일 */
+        .task-card-class {
+            background-color: var(--class-bg);
+            border-color: var(--class-border);
+        }
+        .badge-class {
+            background-color: var(--class-badge-bg);
+            color: var(--class-badge-text);
+        }
+        .task-card-event {
+            background-color: var(--event-bg);
+            border-color: var(--event-border);
+        }
+        .badge-event {
+            background-color: var(--event-badge-bg);
+            color: var(--event-badge-text);
+        }
+        .task-card-todo {
+            background-color: var(--todo-bg);
+            border-color: var(--todo-border);
+        }
+        .badge-todo {
+            background-color: var(--todo-badge-bg);
+            color: var(--todo-badge-text);
+        }
+        .gap-banner {
+            background-color: var(--gap-bg);
+            border-color: var(--gap-border);
+            color: var(--gap-text);
+        }
+
+        /* 타임라인 세로 점선 */
+        .timeline-line::before {
+            content: '';
+            position: absolute;
+            top: 2.6rem;
+            bottom: -0.9rem;
+            left: 1.25rem;
+            width: 1.5px;
+            border-left: 2px dashed var(--border-card);
+        }
+        .timeline-item:last-child .timeline-line::before {
+            display: none;
+        }
+
+        /* 커스텀 스크롤바 */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(150, 140, 130, 0.35); border-radius: 9999px; }
+    </style>
+</head>
+<body data-theme="paper" class="theme-page min-h-screen flex flex-col">
+
+    <!-- ========================================== -->
+    <!-- 상단 내비게이션 & 3가지 감성 테마 스위처 -->
+    <!-- ========================================== -->
+    <header class="theme-header sticky top-0 z-30">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
+            <!-- 로고 및 감성 타이틀 -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-white shadow-sm" style="background-color: var(--accent-main);">
+                    <span>📚</span>
+                </div>
+                <div>
+                    <h1 class="serif-title font-bold text-lg sm:text-xl tracking-tight leading-none">TeacherFlow ✨</h1>
+                    <p class="text-[11px] mt-1 font-medium" style="color: var(--text-secondary);">여유로운 교사의 하루 일과 & 수업 다이어리 🌱</p>
+                </div>
+            </div>
+
+            <!-- 중앙/우측: 3가지 감성 테마 스위처 (시안 실시간 비교) -->
+            <div class="flex items-center gap-1 p-1 rounded-full border" style="background-color: var(--bg-card-subtle); border-color: var(--border-card);">
+                <button type="button" onclick="setTheme('paper')" id="theme-btn-paper"
+                    class="theme-switch-btn px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer">
+                    <span>📔</span>
+                    <span>따뜻한 다이어리</span>
+                </button>
+                <button type="button" onclick="setTheme('forest')" id="theme-btn-forest"
+                    class="theme-switch-btn px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer">
+                    <span>🌿</span>
+                    <span>숲속 산책</span>
+                </button>
+                <button type="button" onclick="setTheme('pastel')" id="theme-btn-pastel"
+                    class="theme-switch-btn px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer">
+                    <span>🌸</span>
+                    <span>포근한 파스텔</span>
+                </button>
+            </div>
+
+            <!-- 우측 기능 버튼 그룹 -->
+            <div class="flex items-center gap-2">
+                <button id="btn-open-timetable" class="theme-btn-soft flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-bold cursor-pointer">
+                    <span>🗓️</span>
+                    <span>주간 시간표</span>
+                </button>
+                <button id="btn-open-alarm" class="flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold border transition-all cursor-pointer" style="background-color: var(--bg-card); border-color: var(--border-card);">
+                    <span>🔔</span>
+                    <span id="alarm-header-label" class="hidden sm:inline">10분 전 알림</span>
+                </button>
+                <button id="btn-open-firebase" class="flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold border transition-all cursor-pointer" style="background-color: var(--bg-card); border-color: var(--border-card);" title="Firebase 클라우드 설정">
+                    <span id="db-status-dot" class="w-2 h-2 rounded-full bg-amber-400"></span>
+                    <span id="db-status-text" class="hidden md:inline">로컬 보관</span>
+                    <span>⚙️</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- 메인 대시보드 컨텐츠 (넉넉한 여백과 편안한 그리드) -->
+    <!-- ========================================== -->
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-7 space-y-7">
+
+        <!-- 1. 감성 히어로 배너: 오늘의 날짜 인사 & 실시간 일과 안내 -->
+        <section class="theme-hero p-6 sm:p-8 relative overflow-hidden">
+            <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                <!-- 좌측: 날짜 이동 및 현재/다음 일과 브리핑 -->
+                <div class="space-y-4 flex-1">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="inline-flex items-center bg-white/15 backdrop-blur-md rounded-full p-1 border border-white/15">
+                            <button id="btn-prev-day" class="p-1.5 hover:bg-white/15 rounded-full transition-colors cursor-pointer text-xs font-bold" title="이전 날짜">
+                                ◀️
+                            </button>
+                            <input type="date" id="date-picker" class="bg-transparent text-sm font-semibold px-2.5 focus:outline-none cursor-pointer text-white [color-scheme:dark]">
+                            <button id="btn-next-day" class="p-1.5 hover:bg-white/15 rounded-full transition-colors cursor-pointer text-xs font-bold" title="다음 날짜">
+                                ▶️
+                            </button>
+                        </div>
+                        <button id="btn-today" class="text-xs font-semibold px-3.5 py-1.5 rounded-full bg-white/15 hover:bg-white/25 transition-colors cursor-pointer">
+                            📍 오늘로 돌아오기
+                        </button>
+                        <span id="live-clock" class="text-xs font-mono px-3 py-1.5 rounded-full bg-black/20 tracking-wider">🕒 00:00:00</span>
+                    </div>
+
+                    <div>
+                        <p id="gentle-greeting" class="text-xs sm:text-sm opacity-85 mb-1">오늘도 아이들과 함께하는 따뜻한 하루를 응원합니다 ☕✨</p>
+                        <h2 id="selected-date-label" class="serif-title text-xl sm:text-2xl font-bold tracking-tight">오늘의 수업과 일과 흐름</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+                        <!-- 지금 진행 중인 일과 -->
+                        <div class="bg-white/15 backdrop-blur-md border border-white/15 rounded-2xl p-4">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-[11px] font-semibold uppercase tracking-wider opacity-90 flex items-center gap-1.5">
+                                    <span>🌞</span> 지금 이 시간
+                                </span>
+                                <span id="current-task-time" class="text-xs opacity-80 font-mono"></span>
+                            </div>
+                            <p id="current-task-title" class="font-bold text-base sm:text-lg truncate">☕ 여유로운 공강 시간입니다</p>
+                        </div>
+
+                        <!-- 다음 예정 일과 -->
+                        <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-4">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-[11px] font-semibold uppercase tracking-wider opacity-90 flex items-center gap-1.5">
+                                    <span>⏳</span> 다음 예정 수업 · 일과
+                                </span>
+                                <span id="next-task-time" class="text-xs opacity-80 font-mono"></span>
+                            </div>
+                            <p id="next-task-title" class="font-semibold text-base truncate">예정된 다음 일정이 없습니다</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 우측: 하루 달성률 카드 -->
+                <div class="bg-white/15 backdrop-blur-md border border-white/15 rounded-2xl p-5 lg:w-64 flex flex-col justify-between shrink-0">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-medium opacity-90">🏅 오늘의 일과 발자취</span>
+                        <span id="progress-count" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-white/20">0 / 0 완료</span>
+                    </div>
+                    <div class="my-2 flex items-baseline gap-2">
+                        <span id="progress-percent" class="serif-title text-3xl sm:text-4xl font-bold">0%</span>
+                        <span class="text-xs opacity-80">달성 🌟</span>
+                    </div>
+                    <div class="w-full bg-black/20 rounded-full h-2.5 overflow-hidden">
+                        <div id="progress-bar" class="bg-white h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. 메인 2단 그리드: 좌측 타임라인(7컬럼) + 우측 공강·목표·메모(5컬럼) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
+
+            <!-- 좌측 영역: 하루 수업 · 행사 · 공강 타임라인 -->
+            <div class="lg:col-span-7 theme-card overflow-hidden">
+                <!-- 타임라인 헤더 -->
+                <div class="p-5 sm:p-6 border-b flex flex-wrap items-center justify-between gap-3" style="border-color: var(--border-card);">
+                    <div>
+                        <h3 class="serif-title font-bold text-lg sm:text-xl flex items-center gap-2">
+                            <span>🪶</span>
+                            오늘의 시간 흐름
+                        </h3>
+                        <p class="text-xs mt-1" style="color: var(--text-secondary);">고정 수업과 학교 행사, 그리고 공강 시간의 할 일을 차분히 정리해 보세요.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <select id="category-filter" class="text-xs font-semibold rounded-full px-3.5 py-2 border focus:outline-none cursor-pointer" style="background-color: var(--bg-card-subtle); border-color: var(--border-card); color: var(--text-primary);">
+                            <option value="all">🌈 전체 흐름 보기</option>
+                            <option value="class">📘 고정 수업만</option>
+                            <option value="event">🎪 학교 행사/회의</option>
+                            <option value="todo">🌱 공강 할 일/업무</option>
+                        </select>
+                        <button id="btn-open-add-modal" class="theme-btn-primary inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold px-4 py-2 rounded-full shadow-xs cursor-pointer">
+                            <span>➕</span>
+                            <span>일정 추가</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 타임라인 본문 -->
+                <div id="timeline-container" class="p-5 sm:p-6 space-y-3.5 min-h-[400px]">
+                    <!-- JS로 동적 렌더링 -->
+                </div>
+            </div>
+
+            <!-- 우측 영역: 공강 시간 안내 + 교사 루틴 + Top 3 핵심 목표 + 감성 회고 메모 -->
+            <div class="lg:col-span-5 space-y-6">
+
+                <!-- 1) 오늘의 빈 시간(공강) 안내 카드 -->
+                <div class="theme-card p-5 sm:p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="serif-title font-bold text-base sm:text-lg flex items-center gap-2">
+                            <span>🍵</span>
+                            숨 고르는 공강 시간
+                        </h3>
+                        <span id="total-free-minutes" class="theme-btn-soft text-xs font-bold px-3 py-1 rounded-full">0분 여유</span>
+                    </div>
+                    <p class="text-xs mb-3.5 leading-relaxed" style="color: var(--text-secondary);">
+                        수업과 행사 사이의 빈 시간입니다. 아래 시간 칩을 누르면 해당 공강에 할 일을 바로 채울 수 있어요 ✨
+                    </p>
+                    <div id="free-slots-summary" class="flex flex-wrap gap-2">
+                        <!-- JS로 공강 칩 동적 렌더링 -->
+                    </div>
+                </div>
+
+                <!-- 2) 교사 맞춤 원클릭 루틴 & 행사 추가 -->
+                <div class="theme-card p-5 sm:p-6">
+                    <div class="flex items-center justify-between mb-3.5">
+                        <h3 class="serif-title font-bold text-base flex items-center gap-2">
+                            <span>✨</span>
+                            자주 쓰는 교사 일과 블록
+                        </h3>
+                        <span class="text-[11px]" style="color: var(--text-muted);">클릭 시 바로 추가</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2.5">
+                        <button type="button" onclick="applyTeacherTemplate('morning_prep')" class="theme-card-subtle flex flex-col items-start p-3.5 hover:scale-[1.02] transition-all text-left cursor-pointer">
+                            <span class="text-lg mb-1.5">☀️</span>
+                            <span class="text-xs font-bold">아침 등교·조례</span>
+                            <span class="text-[10px] mt-0.5" style="color: var(--text-secondary);">출결·알림장 점검</span>
+                        </button>
+                        <button type="button" onclick="applyTeacherTemplate('staff_meeting')" class="theme-card-subtle flex flex-col items-start p-3.5 hover:scale-[1.02] transition-all text-left cursor-pointer">
+                            <span class="text-lg mb-1.5">🎪</span>
+                            <span class="text-xs font-bold">교직원 협의회</span>
+                            <span class="text-[10px] mt-0.5" style="color: var(--text-secondary);">방과 후 회의 등록</span>
+                        </button>
+                        <button type="button" onclick="applyTeacherTemplate('after_school')" class="theme-card-subtle flex flex-col items-start p-3.5 hover:scale-[1.02] transition-all text-left cursor-pointer">
+                            <span class="text-lg mb-1.5">📖</span>
+                            <span class="text-xs font-bold">하교 후 정리</span>
+                            <span class="text-[10px] mt-0.5" style="color: var(--text-secondary);">공문·내일 수업준비</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3) 오늘의 핵심 목표 Top 3 -->
+                <div class="theme-card p-5 sm:p-6">
+                    <div class="flex items-center justify-between mb-3.5">
+                        <h3 class="serif-title font-bold text-base flex items-center gap-2">
+                            <span>🎯</span>
+                            오늘 꼭 챙길 3가지
+                        </h3>
+                        <span class="text-[11px]" style="color: var(--text-muted);">💾 자동 저장됨</span>
+                    </div>
+                    <div id="top-goals-list" class="space-y-2.5">
+                        <!-- JS로 3개 목표 입력창 렌더링 -->
+                    </div>
+                </div>
+
+                <!-- 4) 데일리 노트 & 수업 회고 -->
+                <div class="theme-card p-5 sm:p-6">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="serif-title font-bold text-base flex items-center gap-2">
+                            <span>✍️</span>
+                            오늘의 기록 & 수업 메모
+                        </h3>
+                        <span id="memo-save-status" class="text-[11px]" style="color: var(--text-muted);">💾 저장 완료</span>
+                    </div>
+                    <textarea id="daily-memo" rows="4"
+                        placeholder="학급에서 있었던 따뜻한 순간 💛, 전달사항 📝, 내일 수업 아이디어 💡를 자유롭게 적어보세요..."
+                        class="w-full rounded-2xl p-4 text-sm leading-relaxed border focus:outline-none transition-all resize-none"
+                        style="background-color: var(--bg-card-subtle); border-color: var(--border-card); color: var(--text-primary);"></textarea>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- ========================================== -->
+    <!-- 모달 1: 새 일정 · 행사 · 공강 할 일 추가/수정 모달 -->
+    <!-- ========================================== -->
+    <div id="task-modal" class="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+        <div class="theme-card max-w-md w-full p-6 shadow-2xl">
+            <div class="flex items-center justify-between mb-4">
+                <h3 id="task-modal-title" class="serif-title font-bold text-lg">📝 새 일정 · 할 일 등록</h3>
+                <button type="button" onclick="closeTaskModal()" class="p-1.5 rounded-full hover:bg-black/5 cursor-pointer text-xs font-bold">
+                    ✖️
+                </button>
+            </div>
+            <form id="task-form" class="space-y-4">
+                <input type="hidden" id="task-id">
+
+                <div>
+                    <label class="block text-xs font-semibold mb-2" style="color: var(--text-secondary);">어떤 성격의 일정인가요?</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="task-category" value="todo" class="peer sr-only" checked>
+                            <div class="text-center py-2.5 px-2 rounded-xl border text-xs font-semibold transition-all peer-checked:ring-2" style="border-color: var(--border-card); background-color: var(--bg-card-subtle);">
+                                🌱 공강 할 일
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="task-category" value="event" class="peer sr-only">
+                            <div class="text-center py-2.5 px-2 rounded-xl border text-xs font-semibold transition-all peer-checked:ring-2" style="border-color: var(--border-card); background-color: var(--bg-card-subtle);">
+                                🎪 행사 · 회의
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="task-category" value="class" class="peer sr-only">
+                            <div class="text-center py-2.5 px-2 rounded-xl border text-xs font-semibold transition-all peer-checked:ring-2" style="border-color: var(--border-card); background-color: var(--bg-card-subtle);">
+                                📘 보강 수업
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="block text-xs font-semibold" style="color: var(--text-secondary);">어울리는 이모티콘 고르기</label>
+                        <button type="button" id="btn-auto-emoji" class="text-[11px] font-semibold hover:underline cursor-pointer" style="color: var(--accent-main);">
+                            ✨ 제목에 맞게 자동 추천
+                        </button>
+                    </div>
+                    <input type="hidden" id="task-emoji" value="🌱">
+                    <div id="emoji-picker-grid" class="flex flex-wrap gap-1.5 p-2.5 rounded-2xl border" style="background-color: var(--bg-card-subtle); border-color: var(--border-card);">
+                        <!-- JS로 빠른 이모티콘 칩 렌더링 -->
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-secondary);">일정 제목 *</label>
+                    <input type="text" id="task-title" required placeholder="예: 3학년 2반 국어 / 가정통신문 기안 / 학부모 상담"
+                        class="w-full px-4 py-2.5 rounded-xl text-sm border focus:outline-none"
+                        style="background-color: var(--bg-card-subtle); border-color: var(--border-card);">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-secondary);">시작 시각 *</label>
+                        <input type="time" id="task-start" required class="w-full px-3.5 py-2.5 rounded-xl text-sm border focus:outline-none" style="background-color: var(--bg-card-subtle); border-color: var(--border-card);">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-secondary);">종료 시각 *</label>
+                        <input type="time" id="task-end" required class="w-full px-3.5 py-2.5 rounded-xl text-sm border focus:outline-none" style="background-color: var(--bg-card-subtle); border-color: var(--border-card);">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-secondary);">장소 또는 짧은 메모 (선택)</label>
+                    <input type="text" id="task-note" placeholder="예: 본관 3층 교무실, 준비물: 활동지 28부"
+                        class="w-full px-4 py-2.5 rounded-xl text-sm border focus:outline-none"
+                        style="background-color: var(--bg-card-subtle); border-color: var(--border-card);">
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeTaskModal()" class="px-4 py-2.5 rounded-full text-xs sm:text-sm font-semibold hover:bg-black/5 cursor-pointer">취소</button>
+                    <button type="submit" class="theme-btn-primary px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold cursor-pointer">💾 일정 저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 모달 2: 주간 고정 수업 시간표 설정 모달 (월~금, 1~7교시) -->
+    <!-- ========================================== -->
+    <div id="timetable-modal" class="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 hidden items-center justify-center p-3 sm:p-4">
+        <div class="theme-card max-w-4xl w-full p-5 sm:p-6 shadow-2xl max-h-[92vh] flex flex-col">
+            <div class="flex items-center justify-between pb-3 border-b" style="border-color: var(--border-card);">
+                <div class="flex items-center gap-3">
+                    <div class="theme-btn-soft p-2.5 rounded-2xl text-lg">
+                        🗓️
+                    </div>
+                    <div>
+                        <h3 class="serif-title font-bold text-base sm:text-lg">주간 고정 수업 시간표</h3>
+                        <p class="text-xs" style="color: var(--text-secondary);">요일별 수업을 한 번 등록해 두면 매주 해당 요일에 자동으로 표시됩니다.</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeTimetableModal()" class="p-1.5 rounded-full hover:bg-black/5 cursor-pointer text-xs font-bold">
+                    ✖️
+                </button>
+            </div>
+
+            <div class="py-3 border-b flex flex-wrap items-center justify-between gap-2 text-xs" style="border-color: var(--border-card);">
+                <span style="color: var(--text-secondary);">※ 비워둔 교시는 자동으로 '숨 고르는 공강 시간 🍵'으로 안내됩니다.</span>
+                <button type="button" id="btn-fill-sample-timetable" class="theme-btn-soft px-3.5 py-1.5 rounded-full font-semibold cursor-pointer">
+                    ✨ 예시 시간표 채워보기
+                </button>
+            </div>
+
+            <div class="overflow-auto flex-1 my-3 rounded-2xl border" style="border-color: var(--border-card);">
+                <table class="w-full border-collapse text-xs min-w-[680px]">
+                    <thead>
+                        <tr style="background-color: var(--bg-card-subtle); border-bottom: 1px solid var(--border-card);">
+                            <th class="p-3 text-left font-bold w-36 border-r" style="border-color: var(--border-card);">🕒 교시 / 수업 시간</th>
+                            <th class="p-3 text-center font-bold border-r" style="border-color: var(--border-card);">월요일</th>
+                            <th class="p-3 text-center font-bold border-r" style="border-color: var(--border-card);">화요일</th>
+                            <th class="p-3 text-center font-bold border-r" style="border-color: var(--border-card);">수요일</th>
+                            <th class="p-3 text-center font-bold border-r" style="border-color: var(--border-card);">목요일</th>
+                            <th class="p-3 text-center font-bold">금요일</th>
+                        </tr>
+                    </thead>
+                    <tbody id="timetable-grid-body">
+                        <!-- JS로 1~7교시 렌더링 -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex items-center justify-between pt-2 border-t" style="border-color: var(--border-card);">
+                <span class="text-[11px]" style="color: var(--text-muted);">저장 즉시 오늘 플래너 타임라인에 반영됩니다.</span>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="closeTimetableModal()" class="px-4 py-2 rounded-full text-xs font-semibold hover:bg-black/5 cursor-pointer">닫기</button>
+                    <button type="button" id="btn-save-timetable" class="theme-btn-primary px-5 py-2 rounded-full text-xs font-semibold cursor-pointer">💾 시간표 저장하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 모달 3: 시작 전 미리 알림 설정 모달 -->
+    <!-- ========================================== -->
+    <div id="alarm-modal" class="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+        <div class="theme-card max-w-md w-full p-6 shadow-2xl">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2.5">
+                    <div class="theme-btn-soft p-2.5 rounded-2xl text-lg">
+                        🔔
+                    </div>
+                    <div>
+                        <h3 class="serif-title font-bold text-base sm:text-lg">수업 · 일과 시작 전 미리 알림</h3>
+                        <p class="text-xs" style="color: var(--text-secondary);">은은한 학교 종소리 차임벨로 시간을 알려드려요 🎶</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeAlarmModal()" class="p-1.5 rounded-full hover:bg-black/5 cursor-pointer text-xs font-bold">
+                    ✖️
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <div class="theme-card-subtle flex items-center justify-between p-4">
+                    <div>
+                        <p class="text-sm font-bold">⏰ 미리 알림 켜기</p>
+                        <p class="text-xs mt-0.5" style="color: var(--text-secondary);">수업 및 일정 시작 전에 알림을 울립니다.</p>
+                    </div>
+                    <input type="checkbox" id="alarm-enabled-toggle" class="w-5 h-5 accent-current cursor-pointer" checked>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold mb-2" style="color: var(--text-secondary);">몇 분 전에 알려드릴까요?</label>
+                    <div class="grid grid-cols-4 gap-2">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="alarm-lead" value="0" class="peer sr-only">
+                            <div class="text-center py-2.5 rounded-xl border text-xs font-semibold peer-checked:ring-2" style="border-color: var(--border-card); background-color: var(--bg-card-subtle);">정시</div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="alarm-lead" value="5" class="peer sr-only">
+                            <div class="text-center py-2.5 rounded-xl border text-xs font-semibold peer-checked:ring-2" style="border-color: var(--border-card); background-color: var(--bg-card-subtle);">5분 전</div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="alarm-lead" value="10" class="peer sr-only" checked>
+                            <div class="text-center py-2.5 rounded-xl border text-xs font-semibold peer-checked:ring-2" style="border-color: var(--border-card); background-color: var(--bg-card-subtle);">10분 전</div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="alarm-lead" value="15" class="peer sr-only">
+                            <div class="text-center py-2.5 rounded-xl border text-xs font-semibold peer-checked:ring-2" style="border-color: var(--border-card); background-color: var(--bg-card-subtle);">15분 전</div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="space-y-2.5">
+                    <label class="theme-card-subtle flex items-center justify-between p-3.5 cursor-pointer">
+                        <span class="text-xs font-semibold flex items-center gap-2">
+                            <span>🎵</span> 4음계 학교 차임벨 소리 재생
+                        </span>
+                        <input type="checkbox" id="alarm-sound-toggle" class="w-4 h-4 cursor-pointer" checked>
+                    </label>
+
+                    <div class="theme-card-subtle flex items-center justify-between p-3.5">
+                        <span class="text-xs font-semibold flex items-center gap-2">
+                            <span>💻</span> 브라우저 데스크톱 푸시 알림
+                        </span>
+                        <button type="button" id="btn-request-notif-perm" class="theme-btn-soft px-3 py-1 rounded-full text-[11px] font-semibold cursor-pointer">
+                            권한 허용
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-3 border-t" style="border-color: var(--border-card);">
+                    <button type="button" id="btn-test-alarm" class="theme-btn-soft inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold cursor-pointer">
+                        <span>🔔</span> 지금 알림 테스트
+                    </button>
+                    <button type="button" id="btn-save-alarm" class="theme-btn-primary px-5 py-2 rounded-full text-xs font-semibold cursor-pointer">💾 설정 저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 모달 4: Firebase 클라우드 설정 모달 -->
+    <!-- ========================================== -->
+    <div id="firebase-modal" class="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+        <div class="theme-card max-w-lg w-full p-6 shadow-2xl">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="theme-btn-soft p-2.5 rounded-2xl text-lg">
+                        ☁️
+                    </div>
+                    <div>
+                        <h3 class="serif-title font-bold text-lg">Firebase 클라우드 동기화</h3>
+                        <p class="text-xs" style="color: var(--text-secondary);">학교와 집에서 같은 시간표와 일과를 이어서 보세요 🌈</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeFirebaseModal()" class="p-1.5 rounded-full hover:bg-black/5 cursor-pointer text-xs font-bold">
+                    ✖️
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <div class="theme-card-subtle p-3.5 text-xs leading-relaxed" style="color: var(--text-secondary);">
+                    Firebase 콘솔의 <strong>firebaseConfig</strong> JSON 객체를 아래에 붙여넣으면 Firestore에 실시간 저장됩니다. GitHub Pages나 Netlify 정적 호스팅에서도 바로 동작하며, 설정하지 않아도 브라우저에 안전하게 보관됩니다.
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-secondary);">Firebase Config JSON</label>
+                    <textarea id="firebase-config-input" rows="5"
+                        placeholder='{"apiKey": "...", "authDomain": "...", "projectId": "...", "storageBucket": "...", "messagingSenderId": "...", "appId": "..."}'
+                        class="w-full p-3.5 rounded-2xl text-xs font-mono border focus:outline-none"
+                        style="background-color: var(--bg-card-subtle); border-color: var(--border-card);"></textarea>
+                </div>
+
+                <div class="flex items-center justify-between pt-2">
+                    <button type="button" id="btn-reset-firebase" class="text-xs font-semibold text-rose-600 hover:underline cursor-pointer">
+                        연결 해제 (로컬 모드 전환)
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="closeFirebaseModal()" class="px-4 py-2 rounded-full text-xs font-semibold hover:bg-black/5 cursor-pointer">닫기</button>
+                        <button type="button" id="btn-save-firebase" class="theme-btn-primary px-5 py-2 rounded-full text-xs font-semibold cursor-pointer">☁️ 연결 및 저장</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 커스텀 확인 모달 (alert/confirm 대체) & 실시간 알림 배너 & 토스트 -->
+    <!-- ========================================== -->
+    <div id="confirm-modal" class="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+        <div class="theme-card max-w-sm w-full p-6 shadow-2xl">
+            <h4 id="confirm-title" class="serif-title font-bold text-base mb-1.5">💬 확인</h4>
+            <p id="confirm-message" class="text-xs leading-relaxed mb-5" style="color: var(--text-secondary);"></p>
+            <div class="flex justify-end gap-2">
+                <button type="button" id="confirm-cancel-btn" class="px-4 py-2 rounded-full text-xs font-semibold hover:bg-black/5 cursor-pointer">취소</button>
+                <button type="button" id="confirm-ok-btn" class="theme-btn-primary px-4 py-2 rounded-full text-xs font-semibold cursor-pointer">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 화면 상단 미리 알림 배너 -->
+    <div id="alarm-alert-banner" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 hidden max-w-md w-[92%] theme-hero p-4 shadow-2xl">
+        <div class="flex items-start gap-3">
+            <div class="p-2.5 rounded-2xl bg-white/20 shrink-0 text-lg">
+                🔔
+            </div>
+            <div class="flex-1 min-w-0">
+                <p id="alarm-banner-sub" class="text-[11px] font-bold uppercase tracking-wider opacity-90">잠시 후 일정이 시작됩니다</p>
+                <p id="alarm-banner-title" class="serif-title text-base font-bold truncate mt-0.5"></p>
+                <p id="alarm-banner-time" class="text-xs opacity-85 font-mono mt-0.5"></p>
+            </div>
+            <button type="button" onclick="dismissAlarmBanner()" class="p-1 rounded-full hover:bg-white/20 cursor-pointer text-xs font-bold">
+                ✖️
+            </button>
+        </div>
+    </div>
+
+    <!-- 하단 토스트 메시지 -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- ========================================== -->
+    <!-- JavaScript (Firebase v11 모듈 + 플래너 핵심 로직) -->
+    <!-- ========================================== -->
+    <script type="module">
+        import { initializeApp, getApps, deleteApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+        // ------------------------------------------
+        // 1. 메타데이터 및 초기 상수
+        // ------------------------------------------
+        const CATEGORIES = {
+            class: { label: '수업(고정)', emoji: '📘', badgeClass: 'badge-class', cardClass: 'task-card-class' },
+            event: { label: '학교 행사/회의', emoji: '🎪', badgeClass: 'badge-event', cardClass: 'task-card-event' },
+            todo:  { label: '공강 할 일', emoji: '🌱', badgeClass: 'badge-todo', cardClass: 'task-card-todo' }
+        };
+
+        const QUICK_EMOJIS = ['📘', '🎪', '☕', '🌱', '📝', '🎨', '🏃‍♂️', '💬', '⭐', '🌿', '🎯', '🔔', '🍵', '📌'];
+
+        const EMOJI_KEYWORDS = [
+            { keywords: ['국어', '영어', '수학', '과학', '사회', '도덕', '음악', '미술', '체육', '수업', '교시', '학습'], emoji: '📘' },
+            { keywords: ['회의', '협의', '행사', '조회', '종례', '상담', '연수', '방과후', '창체'], emoji: '🎪' },
+            { keywords: ['커피', '차', '휴식', '공강', '쉬는', '점심', '산책'], emoji: '☕' },
+            { keywords: ['공문', '기안', '인쇄', '서류', '정리', '출결', '알림장', '메모'], emoji: '📝' },
+            { keywords: ['미술', '만들기', '꾸미기', '활동지', '보드'], emoji: '🎨' },
+            { keywords: ['운동', '체육', '달리기', '스트레칭'], emoji: '🏃‍♂️' },
+            { keywords: ['전화', '면담', '대화', '이야기', '소통'], emoji: '💬' },
+            { keywords: ['목표', '중요', '평가', '시험', '발표'], emoji: '🎯' }
+        ];
+
+        const THEME_GREETINGS = {
+            paper:  '오늘도 아이들과 함께하는 따뜻한 하루를 응원합니다 ☕✨',
+            forest: '숲속 아침처럼 상쾌하고 평온한 교실 하루가 되길 바라요 🌿🍃',
+            pastel: '포근하고 기분 좋은 에너지로 오늘의 수업을 채워보세요 🌸🌷'
+        };
+
+        const DEFAULT_PERIODS = [
+            { period: 1, label: '1교시', start: '09:00', end: '09:45' },
+            { period: 2, label: '2교시', start: '09:55', end: '10:40' },
+            { period: 3, label: '3교시', start: '10:50', end: '11:35' },
+            { period: 4, label: '4교시', start: '11:45', end: '12:30' },
+            { period: 5, label: '5교시', start: '13:20', end: '14:05' },
+            { period: 6, label: '6교시', start: '14:15', end: '15:00' },
+            { period: 7, label: '7교시', start: '15:10', end: '15:55' }
+        ];
+
+        const TEACHER_TEMPLATES = {
+            morning_prep: [
+                { title: '등교 지도 및 학급 출결 · 알림장 확인', start: '08:20', end: '08:50', category: 'todo', note: '따뜻한 아침 인사와 제출물 수합' }
+            ],
+            staff_meeting: [
+                { title: '교직원 회의 및 학년 협의회', start: '16:00', end: '16:50', category: 'event', note: '본관 2층 교무회의실' }
+            ],
+            after_school: [
+                { title: '업무포털 공문 정리 및 내일 수업 준비', start: '16:00', end: '16:40', category: 'todo', note: '학습지 인쇄 및 수업 자료 점검' }
+            ]
+        };
+
+        const LS_THEME_KEY = 'teacherflow_theme_v2';
+        const LS_CONFIG_KEY = 'teacherflow_firebase_config_v2';
+        const LS_DATA_PREFIX = 'teacherflow_data_v2_';
+        const LS_TIMETABLE_KEY = 'teacherflow_timetable_v2';
+        const LS_ALARM_KEY = 'teacherflow_alarm_v2';
+
+        function getTodayStr() {
+            const now = new Date();
+            const offset = now.getTimezoneOffset() * 60000;
+            return new Date(now.getTime() - offset).toISOString().split('T')[0];
+        }
+
+        function getWeekdayKey(dateStr) {
+            const dayIdx = new Date(dateStr + 'T00:00:00').getDay();
+            const map = { 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri' };
+            return map[dayIdx] || null;
+        }
+
+        function formatKoreanDate(dateStr) {
+            const d = new Date(dateStr + 'T00:00:00');
+            const days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+            return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 ${days[d.getDay()]}`;
+        }
+
+        let state = {
+            theme: localStorage.getItem(LS_THEME_KEY) || 'paper',
+            selectedDate: getTodayStr(),
+            filterCategory: 'all',
+            dayData: {
+                tasks: [],
+                hiddenRecurringIds: [],
+                completedRecurringIds: [],
+                goals: [{ text: '', done: false }, { text: '', done: false }, { text: '', done: false }],
+                memo: ''
+            },
+            timetable: {
+                periods: JSON.parse(JSON.stringify(DEFAULT_PERIODS)),
+                schedule: { mon: {}, tue: {}, wed: {}, thu: {}, fri: {} }
+            },
+            alarmSettings: { enabled: true, leadMinutes: 10, sound: true },
+            triggeredAlarms: new Set(),
+            isFirebaseConnected: false,
+            fbApp: null,
+            fbAuth: null,
+            fbDb: null,
+            fbUser: null,
+            unsubscribeSnapshot: null,
+            unsubscribeTimetable: null
+        };
+
+        // ------------------------------------------
+        // 2. 3가지 감성 테마 전환기
+        // ------------------------------------------
+        window.setTheme = function(themeName) {
+            state.theme = themeName;
+            document.body.setAttribute('data-theme', themeName);
+            localStorage.setItem(LS_THEME_KEY, themeName);
+
+            // 상단 테마 버튼 활성 스타일 업데이트
+            ['paper', 'forest', 'pastel'].forEach(t => {
+                const btn = document.getElementById(`theme-btn-${t}`);
+                if (!btn) return;
+                if (t === themeName) {
+                    btn.style.backgroundColor = 'var(--accent-main)';
+                    btn.style.color = '#FFFFFF';
+                    btn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.12)';
+                } else {
+                    btn.style.backgroundColor = 'transparent';
+                    btn.style.color = 'var(--text-secondary)';
+                    btn.style.boxShadow = 'none';
+                }
+            });
+
+            const greetingEl = document.getElementById('gentle-greeting');
+            if (greetingEl) greetingEl.textContent = THEME_GREETINGS[themeName] || THEME_GREETINGS.paper;
+        };
+
+        // ------------------------------------------
+        // 3. Firebase & 하이브리드 데이터 계층
+        // ------------------------------------------
+        async function initFirebaseFromConfig(configObj) {
+            try {
+                if (state.unsubscribeSnapshot) { state.unsubscribeSnapshot(); state.unsubscribeSnapshot = null; }
+                if (state.unsubscribeTimetable) { state.unsubscribeTimetable(); state.unsubscribeTimetable = null; }
+                if (getApps().length > 0) {
+                    await Promise.all(getApps().map(app => deleteApp(app)));
+                }
+
+                const app = initializeApp(configObj);
+                const auth = getAuth(app);
+                const db = getFirestore(app);
+
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                state.fbApp = app;
+                state.fbAuth = auth;
+                state.fbDb = db;
+                state.fbUser = auth.currentUser;
+                state.isFirebaseConnected = true;
+
+                updateConnectionBadge(true);
+                subscribeTimetable();
+                loadDayData(state.selectedDate);
+                return true;
+            } catch (error) {
+                console.error('Firebase 연결 오류:', error);
+                state.isFirebaseConnected = false;
+                updateConnectionBadge(false);
+                showToast(`Firebase 연결 실패: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        function updateConnectionBadge(connected) {
+            const dot = document.getElementById('db-status-dot');
+            const text = document.getElementById('db-status-text');
+            if (connected) {
+                dot.className = 'w-2 h-2 rounded-full bg-emerald-500';
+                text.textContent = '클라우드 동기화';
+            } else {
+                dot.className = 'w-2 h-2 rounded-full bg-amber-400';
+                text.textContent = '로컬 보관';
+            }
+        }
+
+        function subscribeTimetable() {
+            if (state.unsubscribeTimetable) { state.unsubscribeTimetable(); state.unsubscribeTimetable = null; }
+
+            if (state.isFirebaseConnected && state.fbDb && state.fbUser) {
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'teacherflow-diary';
+                const ttRef = doc(state.fbDb, 'artifacts', appId, 'users', state.fbUser.uid, 'settings', 'weeklyTimetable');
+                state.unsubscribeTimetable = onSnapshot(ttRef, (snap) => {
+                    if (snap.exists()) {
+                        const data = snap.data();
+                        if (Array.isArray(data.periods)) state.timetable.periods = data.periods;
+                        if (data.schedule) state.timetable.schedule = data.schedule;
+                        renderAll();
+                    }
+                });
+            } else {
+                const raw = localStorage.getItem(LS_TIMETABLE_KEY);
+                if (raw) {
+                    try {
+                        const parsed = JSON.parse(raw);
+                        if (Array.isArray(parsed.periods)) state.timetable.periods = parsed.periods;
+                        if (parsed.schedule) state.timetable.schedule = parsed.schedule;
+                    } catch {}
+                }
+            }
+        }
+
+        async function saveTimetableData() {
+            if (state.isFirebaseConnected && state.fbDb && state.fbUser) {
+                try {
+                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'teacherflow-diary';
+                    const ttRef = doc(state.fbDb, 'artifacts', appId, 'users', state.fbUser.uid, 'settings', 'weeklyTimetable');
+                    await setDoc(ttRef, { ...state.timetable, updatedAt: new Date().toISOString() });
+                } catch (err) {
+                    showToast('시간표 클라우드 저장에 실패했습니다.', 'error');
+                }
+            } else {
+                localStorage.setItem(LS_TIMETABLE_KEY, JSON.stringify(state.timetable));
+                renderAll();
+            }
+        }
+
+        function getEmptyDayData() {
+            return {
+                tasks: [],
+                hiddenRecurringIds: [],
+                completedRecurringIds: [],
+                goals: [{ text: '', done: false }, { text: '', done: false }, { text: '', done: false }],
+                memo: ''
+            };
+        }
+
+        function loadDayData(dateStr) {
+            if (state.unsubscribeSnapshot) { state.unsubscribeSnapshot(); state.unsubscribeSnapshot = null; }
+
+            if (state.isFirebaseConnected && state.fbDb && state.fbUser) {
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'teacherflow-diary';
+                const docRef = doc(state.fbDb, 'artifacts', appId, 'users', state.fbUser.uid, 'dailyPlans', dateStr);
+                state.unsubscribeSnapshot = onSnapshot(docRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        state.dayData = {
+                            tasks: Array.isArray(data.tasks) ? data.tasks : [],
+                            hiddenRecurringIds: Array.isArray(data.hiddenRecurringIds) ? data.hiddenRecurringIds : [],
+                            completedRecurringIds: Array.isArray(data.completedRecurringIds) ? data.completedRecurringIds : [],
+                            goals: Array.isArray(data.goals) && data.goals.length === 3 ? data.goals : getEmptyDayData().goals,
+                            memo: data.memo || ''
+                        };
+                    } else {
+                        state.dayData = getEmptyDayData();
+                    }
+                    renderAll();
+                });
+            } else {
+                const raw = localStorage.getItem(LS_DATA_PREFIX + dateStr);
+                if (raw) {
+                    try {
+                        const parsed = JSON.parse(raw);
+                        state.dayData = {
+                            tasks: Array.isArray(parsed.tasks) ? parsed.tasks : [],
+                            hiddenRecurringIds: Array.isArray(parsed.hiddenRecurringIds) ? parsed.hiddenRecurringIds : [],
+                            completedRecurringIds: Array.isArray(parsed.completedRecurringIds) ? parsed.completedRecurringIds : [],
+                            goals: Array.isArray(parsed.goals) && parsed.goals.length === 3 ? parsed.goals : getEmptyDayData().goals,
+                            memo: parsed.memo || ''
+                        };
+                    } catch {
+                        state.dayData = getEmptyDayData();
+                    }
+                } else {
+                    // 첫 방문 시 오늘 날짜에 포근한 예시 데이터 제공
+                    if (dateStr === getTodayStr() && !localStorage.getItem('teacherflow_visited_v2')) {
+                        localStorage.setItem('teacherflow_visited_v2', 'true');
+                        state.timetable.schedule = {
+                            mon: { 1: '3-2 국어', 3: '3-1 국어', 5: '3-3 국어' },
+                            tue: { 2: '3-2 국어', 4: '3-4 국어', 6: '창체(독서반)' },
+                            wed: { 1: '3-1 국어', 2: '3-3 국어', 5: '3-4 국어' },
+                            thu: { 1: '3-2 국어', 3: '3-4 국어', 6: '3-1 국어' },
+                            fri: { 2: '3-3 국어', 4: '3-2 국어', 5: '학급 자치' }
+                        };
+                        localStorage.setItem(LS_TIMETABLE_KEY, JSON.stringify(state.timetable));
+
+                        state.dayData = {
+                            tasks: [
+                                { id: crypto.randomUUID(), title: '등교 지도 및 아침 출결 · 알림장 확인', start: '08:20', end: '08:50', category: 'todo', emoji: '☀️', note: '아침 자습 시간 활용', completed: true },
+                                { id: crypto.randomUUID(), title: '공문 처리 및 수업 활동지 인쇄', start: '10:50', end: '11:35', category: 'todo', emoji: '📝', note: '공강 시간 활용 행정 업무', completed: false },
+                                { id: crypto.randomUUID(), title: '학년부 협의회 및 생활지도 나눔', start: '16:05', end: '16:50', category: 'event', emoji: '🎪', note: '본관 3층 교무실', completed: false }
+                            ],
+                            hiddenRecurringIds: [],
+                            completedRecurringIds: [],
+                            goals: [
+                                { text: '공강 시간에 이번 주 가정통신문 기안 완료하기', done: false },
+                                { text: '결석생 학부모님께 따뜻한 안부 전화 드리기', done: false },
+                                { text: '내일 1교시 수업 자료 최종 점검', done: false }
+                            ],
+                            memo: '우측 상단의 세 가지 테마(📔 따뜻한 다이어리 / 🌿 숲속 산책 / 🌸 포근한 파스텔)를 눌러 선생님께 가장 편안한 화면을 골라보세요 ✨'
+                        };
+                        saveDayData();
+                    } else {
+                        state.dayData = getEmptyDayData();
+                    }
+                }
+                renderAll();
+            }
+        }
+
+        async function saveDayData() {
+            if (state.isFirebaseConnected && state.fbDb && state.fbUser) {
+                try {
+                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'teacherflow-diary';
+                    const docRef = doc(state.fbDb, 'artifacts', appId, 'users', state.fbUser.uid, 'dailyPlans', state.selectedDate);
+                    await setDoc(docRef, { ...state.dayData, updatedAt: new Date().toISOString() });
+                } catch (err) {
+                    showToast('클라우드 저장 중 오류가 발생했습니다.', 'error');
+                }
+            } else {
+                localStorage.setItem(LS_DATA_PREFIX + state.selectedDate, JSON.stringify(state.dayData));
+                renderAll();
+            }
+        }
+
+        // ------------------------------------------
+        // 4. 시간표 병합, 공강 자동 계산 & 렌더링
+        // ------------------------------------------
+        function getMergedTasksForDate(dateStr) {
+            const weekdayKey = getWeekdayKey(dateStr);
+            const recurringTasks = [];
+
+            if (weekdayKey && state.timetable && state.timetable.schedule[weekdayKey]) {
+                const daySched = state.timetable.schedule[weekdayKey];
+                state.timetable.periods.forEach(p => {
+                    const subject = (daySched[p.period] || '').trim();
+                    const recId = `rec_${weekdayKey}_${p.period}`;
+                    if (subject && !state.dayData.hiddenRecurringIds.includes(recId)) {
+                        recurringTasks.push({
+                            id: recId,
+                            isRecurring: true,
+                            periodLabel: p.label,
+                            title: `[${p.label}] ${subject}`,
+                            start: p.start,
+                            end: p.end,
+                            category: 'class',
+                            note: '주간 고정 시간표 수업',
+                            completed: state.dayData.completedRecurringIds.includes(recId)
+                        });
+                    }
+                });
+            }
+
+            const combined = [...recurringTasks, ...state.dayData.tasks];
+            combined.sort((a, b) => a.start.localeCompare(b.start));
+            return combined;
+        }
+
+        function timeToMinutes(hhmm) {
+            const [h, m] = hhmm.split(':').map(Number);
+            return h * 60 + m;
+        }
+
+        function minutesToTime(mins) {
+            const h = String(Math.floor(mins / 60)).padStart(2, '0');
+            const m = String(mins % 60).padStart(2, '0');
+            return `${h}:${m}`;
+        }
+
+        function calculateFreeGaps(sortedTasks) {
+            const DAY_START = 8 * 60 + 20;
+            const DAY_END = 17 * 60;
+            const MIN_GAP = 15;
+
+            const gaps = [];
+            let cursor = DAY_START;
+
+            sortedTasks.forEach(t => {
+                const s = timeToMinutes(t.start);
+                const e = timeToMinutes(t.end);
+                if (s > cursor && (s - cursor) >= MIN_GAP) {
+                    gaps.push({ start: minutesToTime(cursor), end: minutesToTime(s), duration: s - cursor });
+                }
+                if (e > cursor) cursor = e;
+            });
+
+            if (DAY_END > cursor && (DAY_END - cursor) >= MIN_GAP) {
+                gaps.push({ start: minutesToTime(cursor), end: minutesToTime(DAY_END), duration: DAY_END - cursor });
+            }
+            return gaps;
+        }
+
+        function escapeHtml(str) {
+            return String(str || '').replace(/[&<>"']/g, m => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[m]));
+        }
+
+        function renderAll() {
+            document.getElementById('selected-date-label').textContent = formatKoreanDate(state.selectedDate);
+            renderTimeline();
+            renderGoals();
+            const memoEl = document.getElementById('daily-memo');
+            if (document.activeElement !== memoEl) {
+                memoEl.value = state.dayData.memo || '';
+            }
+            updateLiveScheduleBanner();
+        }
+
+        function renderTimeline() {
+            const container = document.getElementById('timeline-container');
+            const allMergedTasks = getMergedTasksForDate(state.selectedDate);
+            const freeGaps = calculateFreeGaps(allMergedTasks);
+
+            // 우측 공강 요약 업데이트
+            const totalFreeMins = freeGaps.reduce((acc, g) => acc + g.duration, 0);
+            document.getElementById('total-free-minutes').textContent = `총 ${totalFreeMins}분 여유`;
+
+            const freeSummaryEl = document.getElementById('free-slots-summary');
+            if (freeGaps.length === 0) {
+                freeSummaryEl.innerHTML = `<span class="text-xs" style="color: var(--text-muted);">오늘 일과 중 15분 이상 빈 시간이 없습니다.</span>`;
+            } else {
+                freeSummaryEl.innerHTML = freeGaps.map(gap => `
+                    <button type="button" onclick="openAddTaskInGap('${gap.start}', '${gap.end}')"
+                        class="gap-banner inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-dashed text-xs font-semibold hover:scale-[1.03] transition-all cursor-pointer">
+                        <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+                        <span>${gap.start}~${gap.end} (${gap.duration}분)</span>
+                    </button>
+                `).join('');
+            }
+
+            // 진행률 업데이트
+            const totalCount = allMergedTasks.length;
+            const completedCount = allMergedTasks.filter(t => t.completed).length;
+            const percent = totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
+            document.getElementById('progress-count').textContent = `${completedCount} / ${totalCount} 완료`;
+            document.getElementById('progress-percent').textContent = `${percent}%`;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+
+            const tasks = allMergedTasks.filter(t => state.filterCategory === 'all' || t.category === state.filterCategory);
+
+            if (tasks.length === 0) {
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-16 text-center">
+                        <div class="theme-btn-soft w-14 h-14 rounded-full flex items-center justify-center mb-3 text-2xl">
+                            🌞
+                        </div>
+                        <p class="serif-title text-base font-bold">아직 등록된 수업이나 일과가 없어요 ✨</p>
+                        <p class="text-xs mt-1.5 max-w-xs leading-relaxed" style="color: var(--text-secondary);">
+                            상단의 <strong>🗓️ 주간 시간표</strong>에서 고정 수업을 등록하거나 <strong>➕ 일정 추가</strong> 버튼을 눌러 하루의 흐름을 그려보세요.
+                        </p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            const now = new Date();
+            const currentHHMM = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            const isToday = state.selectedDate === getTodayStr();
+
+            let htmlParts = [];
+            for (let i = 0; i < tasks.length; i++) {
+                const task = tasks[i];
+                const cat = CATEGORIES[task.category] || CATEGORIES.todo;
+                const displayEmoji = task.emoji || cat.emoji;
+                const isNow = isToday && !task.completed && task.start <= currentHHMM && currentHHMM < task.end;
+
+                htmlParts.push(`
+                <div class="timeline-item relative flex gap-4 group">
+                    <!-- 좌측 완료 체크 원형 버튼 -->
+                    <div class="timeline-line relative flex flex-col items-center pt-1.5">
+                        <button type="button" onclick="toggleTaskComplete('${task.id}', ${!!task.isRecurring})"
+                            class="relative z-10 w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all cursor-pointer text-sm font-bold"
+                            style="${task.completed
+                                ? 'background-color: var(--accent-main); border-color: var(--accent-main); color: #FFFFFF;'
+                                : isNow
+                                    ? 'background-color: var(--accent-soft); border-color: var(--accent-main); color: var(--accent-main);'
+                                    : 'background-color: var(--bg-card); border-color: var(--border-card); color: var(--text-muted);'}">
+                            ${task.completed ? '✅' : '○'}
+                        </button>
+                    </div>
+
+                    <!-- 우측 일정 카드 -->
+                    <div class="flex-1 rounded-2xl border p-4 transition-all ${task.completed ? 'opacity-65' : ''} ${cat.cardClass}"
+                         style="${isNow ? 'box-shadow: 0 0 0 2px var(--accent-main);' : ''}">
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold font-mono" style="color: var(--text-secondary);">
+                                    🕒 ${task.start} ~ ${task.end}
+                                </span>
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${cat.badgeClass}">
+                                    ${cat.emoji} ${cat.label}
+                                </span>
+                                ${isNow ? '<span class="theme-btn-primary px-2.5 py-0.5 rounded-full text-[10px] font-bold animate-pulse">🔥 진행 중</span>' : ''}
+                            </div>
+
+                            <!-- 수정/삭제 또는 오늘 휴강 버튼 -->
+                            <div class="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                                ${task.isRecurring ? `
+                                    <button type="button" onclick="hideRecurringTaskToday('${task.id}')" class="px-2.5 py-1 text-[11px] font-semibold rounded-full hover:bg-black/5 transition-colors cursor-pointer" style="color: var(--text-secondary);">
+                                        🚫 오늘 휴강
+                                    </button>
+                                ` : `
+                                    <button type="button" onclick="openEditTaskModal('${task.id}')" class="px-2 py-1 rounded-full hover:bg-black/5 transition-colors cursor-pointer text-xs" title="수정">
+                                        ✏️
+                                    </button>
+                                    <button type="button" onclick="deleteTask('${task.id}')" class="px-2 py-1 rounded-full hover:bg-rose-500/10 text-rose-600 transition-colors cursor-pointer text-xs" title="삭제">
+                                        🗑️
+                                    </button>
+                                `}
+                            </div>
+                        </div>
+
+                        <h4 class="text-sm sm:text-base font-bold flex items-center gap-1.5 ${task.completed ? 'line-through opacity-70' : ''}">
+                            <span class="text-base">${displayEmoji}</span>
+                            <span>${escapeHtml(task.title)}</span>
+                        </h4>
+                        ${task.note ? `<p class="text-xs mt-1 leading-relaxed" style="color: var(--text-secondary);">📌 ${escapeHtml(task.note)}</p>` : ''}
+                    </div>
+                </div>
+                `);
+
+                // 일정 사이 15분 이상 빈 시간(공강) 점선 배너
+                if (state.filterCategory === 'all' && i < tasks.length - 1) {
+                    const nextT = tasks[i + 1];
+                    const gapMins = timeToMinutes(nextT.start) - timeToMinutes(task.end);
+                    if (gapMins >= 15) {
+                        htmlParts.push(`
+                        <div class="pl-14">
+                            <button type="button" onclick="openAddTaskInGap('${task.end}', '${nextT.start}')"
+                                class="gap-banner w-full py-2.5 px-4 rounded-2xl border border-dashed text-xs font-semibold flex items-center justify-between hover:opacity-90 transition-all cursor-pointer">
+                                <span class="flex items-center gap-2">
+                                    <span>☕</span>
+                                    공강 시간 (${task.end} ~ ${nextT.start} · ${gapMins}분 여유)
+                                </span>
+                                <span class="px-2.5 py-0.5 rounded-full bg-white/70 text-[11px] font-bold">
+                                    ➕ 할 일 채우기
+                                </span>
+                            </button>
+                        </div>
+                        `);
+                    }
+                }
+            }
+
+            container.innerHTML = htmlParts.join('');
+            lucide.createIcons();
+        }
+
+        function renderGoals() {
+            const container = document.getElementById('top-goals-list');
+            const goalBadges = ['🥇', '🥈', '🥉'];
+            container.innerHTML = state.dayData.goals.map((goal, idx) => `
+                <div class="theme-card-subtle flex items-center gap-2.5 px-3.5 py-2.5">
+                    <span class="text-sm shrink-0">${goalBadges[idx] || '⭐'}</span>
+                    <button type="button" onclick="toggleGoalDone(${idx})"
+                        class="w-6 h-6 rounded-full flex items-center justify-center border transition-all shrink-0 cursor-pointer text-xs font-bold"
+                        style="${goal.done
+                            ? 'background-color: var(--accent-main); border-color: var(--accent-main); color: #FFFFFF;'
+                            : 'background-color: var(--bg-card); border-color: var(--border-card); color: var(--text-muted);'}">
+                        ${goal.done ? '✓' : ''}
+                    </button>
+                    <input type="text" value="${escapeHtml(goal.text)}"
+                        onchange="updateGoalText(${idx}, this.value)"
+                        placeholder="핵심 목표 ${idx + 1}을 적어보세요"
+                        class="flex-1 bg-transparent text-xs sm:text-sm focus:outline-none ${goal.done ? 'line-through opacity-55' : ''}">
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // ------------------------------------------
+        // 5. 실시간 시계 & 미리 알림 (4음계 학교 차임벨)
+        // ------------------------------------------
+        function updateLiveScheduleBanner() {
+            const now = new Date();
+            document.getElementById('live-clock').textContent = `🕒 ${now.toTimeString().split(' ')[0]}`;
+
+            const currentHHMM = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            const sortedTasks = getMergedTasksForDate(state.selectedDate);
+
+            const currentTitleEl = document.getElementById('current-task-title');
+            const currentTimeEl = document.getElementById('current-task-time');
+            const nextTitleEl = document.getElementById('next-task-title');
+            const nextTimeEl = document.getElementById('next-task-time');
+
+            if (state.selectedDate !== getTodayStr()) {
+                currentTitleEl.textContent = '📅 선택한 날짜의 일과표를 보고 계십니다';
+                currentTimeEl.textContent = state.selectedDate;
+                const first = sortedTasks[0];
+                nextTitleEl.textContent = first ? `${first.emoji || '📌'} ${first.title}` : '등록된 일정 없음';
+                nextTimeEl.textContent = first ? `${first.start} ~ ${first.end}` : '';
+                return;
+            }
+
+            const currentTask = sortedTasks.find(t => !t.completed && t.start <= currentHHMM && currentHHMM < t.end);
+            if (currentTask) {
+                currentTitleEl.textContent = `${currentTask.emoji || '📌'} ${currentTask.title}`;
+                currentTimeEl.textContent = `${currentTask.start} ~ ${currentTask.end}`;
+            } else {
+                currentTitleEl.textContent = '☕ 여유로운 공강 · 휴식 시간입니다';
+                currentTimeEl.textContent = '자유 시간';
+            }
+
+            const nextTask = sortedTasks.find(t => !t.completed && t.start > currentHHMM);
+            if (nextTask) {
+                nextTitleEl.textContent = `${nextTask.emoji || '📌'} ${nextTask.title}`;
+                nextTimeEl.textContent = `${nextTask.start} 시작`;
+            } else {
+                nextTitleEl.textContent = '🌙 오늘 예정된 다음 수업·일정이 없습니다';
+                nextTimeEl.textContent = '';
+            }
+
+            checkPreStartAlarms(now, sortedTasks);
+        }
+
+        function playSchoolChime() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                // 4음계 부드러운 학교 차임벨 (미 - 도 - 레 - 솔)
+                const notes = [659.25, 523.25, 587.33, 392.00];
+                notes.forEach((freq, idx) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.36);
+
+                    gain.gain.setValueAtTime(0.001, ctx.currentTime + idx * 0.36);
+                    gain.gain.exponentialRampToValueAtTime(0.22, ctx.currentTime + idx * 0.36 + 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.36 + 0.65);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(ctx.currentTime + idx * 0.36);
+                    osc.stop(ctx.currentTime + idx * 0.36 + 0.7);
+                });
+            } catch (e) {
+                console.warn('차임벨 재생 제한:', e);
+            }
+        }
+
+        function triggerPreStartNotification(task, leadMins) {
+            if (state.alarmSettings.sound) playSchoolChime();
+
+            const subText = leadMins === 0 ? '지금 바로 일정이 시작됩니다!' : `${leadMins}분 후 일정이 시작됩니다!`;
+            const banner = document.getElementById('alarm-alert-banner');
+            document.getElementById('alarm-banner-sub').textContent = subText;
+            document.getElementById('alarm-banner-title').textContent = task.title;
+            document.getElementById('alarm-banner-time').textContent = `${task.start} ~ ${task.end}`;
+            banner.classList.remove('hidden');
+
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification(`🔔 ${subText}`, { body: `${task.title} (${task.start} ~ ${task.end})` });
+            }
+        }
+
+        function checkPreStartAlarms(now, todayTasks) {
+            if (!state.alarmSettings.enabled || now.getSeconds() > 2) return;
+            const nowTotalMins = now.getHours() * 60 + now.getMinutes();
+            const lead = Number(state.alarmSettings.leadMinutes || 0);
+            const todayKey = getTodayStr();
+
+            todayTasks.forEach(task => {
+                if (task.completed) return;
+                const startMins = timeToMinutes(task.start);
+                if (startMins - lead === nowTotalMins) {
+                    const key = `${todayKey}_${task.id}_${lead}`;
+                    if (!state.triggeredAlarms.has(key)) {
+                        state.triggeredAlarms.add(key);
+                        triggerPreStartNotification(task, lead);
+                    }
+                }
+            });
+        }
+
+        window.dismissAlarmBanner = function() {
+            document.getElementById('alarm-alert-banner').classList.add('hidden');
+        };
+
+        // ------------------------------------------
+        // 6. 사용자 인터랙션 핸들러
+        // ------------------------------------------
+        window.toggleTaskComplete = function(id, isRecurring = false) {
+            if (isRecurring) {
+                const idx = state.dayData.completedRecurringIds.indexOf(id);
+                if (idx === -1) state.dayData.completedRecurringIds.push(id);
+                else state.dayData.completedRecurringIds.splice(idx, 1);
+                saveDayData();
+                return;
+            }
+            const task = state.dayData.tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                saveDayData();
+            }
+        };
+
+        window.hideRecurringTaskToday = async function(recId) {
+            const ok = await showConfirm('오늘 수업 휴강 처리', '오늘 하루만 이 수업을 시간표에서 비워두고 공강으로 전환할까요?');
+            if (!ok) return;
+            if (!state.dayData.hiddenRecurringIds.includes(recId)) {
+                state.dayData.hiddenRecurringIds.push(recId);
+            }
+            saveDayData();
+            showToast('해당 교시가 오늘 공강 시간으로 비워졌습니다.');
+        };
+
+        window.openAddTaskInGap = function(startStr, endStr) {
+            document.getElementById('task-modal-title').textContent = '☕ 공강 시간 할 일 채우기';
+            document.getElementById('task-form').reset();
+            document.getElementById('task-id').value = '';
+            document.getElementById('task-start').value = startStr;
+            document.getElementById('task-end').value = endStr;
+            const todoRadio = document.querySelector('input[name="task-category"][value="todo"]');
+            if (todoRadio) todoRadio.checked = true;
+            setSelectedEmoji('☕');
+
+            const modal = document.getElementById('task-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('task-title').focus();
+        };
+
+        window.openEditTaskModal = function(id) {
+            const task = state.dayData.tasks.find(t => t.id === id);
+            if (!task) return;
+            document.getElementById('task-modal-title').textContent = '✏️ 일정 수정하기';
+            document.getElementById('task-id').value = task.id;
+            document.getElementById('task-title').value = task.title;
+            document.getElementById('task-start').value = task.start;
+            document.getElementById('task-end').value = task.end;
+            document.getElementById('task-note').value = task.note || '';
+            const radio = document.querySelector(`input[name="task-category"][value="${task.category}"]`);
+            if (radio) radio.checked = true;
+            setSelectedEmoji(task.emoji || (CATEGORIES[task.category] && CATEGORIES[task.category].emoji) || '📌');
+
+            const modal = document.getElementById('task-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        function setSelectedEmoji(emoji) {
+            const hiddenInput = document.getElementById('task-emoji');
+            if (hiddenInput) hiddenInput.value = emoji;
+            document.querySelectorAll('.emoji-choice-btn').forEach(btn => {
+                if (btn.dataset.emoji === emoji) {
+                    btn.style.backgroundColor = 'var(--accent-soft)';
+                    btn.style.borderColor = 'var(--accent-main)';
+                    btn.style.transform = 'scale(1.1)';
+                } else {
+                    btn.style.backgroundColor = 'var(--bg-card)';
+                    btn.style.borderColor = 'var(--border-card)';
+                    btn.style.transform = 'scale(1)';
+                }
+            });
+        }
+
+        function suggestEmojiFromText(titleText, category) {
+            const lower = (titleText || '').toLowerCase();
+            for (const rule of EMOJI_KEYWORDS) {
+                if (rule.keywords.some(kw => lower.includes(kw))) {
+                    return rule.emoji;
+                }
+            }
+            return (CATEGORIES[category] && CATEGORIES[category].emoji) || '📌';
+        }
+
+        function initEmojiPicker() {
+            const grid = document.getElementById('emoji-picker-grid');
+            if (!grid) return;
+            grid.innerHTML = QUICK_EMOJIS.map(em => `
+                <button type="button" data-emoji="${em}" onclick="setSelectedEmoji('${em}')"
+                    class="emoji-choice-btn w-8 h-8 rounded-xl border flex items-center justify-center text-base transition-all cursor-pointer"
+                    style="background-color: var(--bg-card); border-color: var(--border-card);">
+                    ${em}
+                </button>
+            `).join('');
+            setSelectedEmoji('🌱');
+
+            document.querySelectorAll('input[name="task-category"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    const currentTitle = document.getElementById('task-title').value;
+                    setSelectedEmoji(suggestEmojiFromText(currentTitle, e.target.value));
+                });
+            });
+
+            document.getElementById('btn-auto-emoji').addEventListener('click', () => {
+                const titleVal = document.getElementById('task-title').value;
+                const catVal = document.querySelector('input[name="task-category"]:checked')?.value || 'todo';
+                const picked = suggestEmojiFromText(titleVal, catVal);
+                setSelectedEmoji(picked);
+                showToast(`${picked} 이모티콘이 추천되었습니다!`);
+            });
+        }
+
+        window.deleteTask = async function(id) {
+            const ok = await showConfirm('일정 삭제', '선택한 일정을 목록에서 지울까요?');
+            if (!ok) return;
+            state.dayData.tasks = state.dayData.tasks.filter(t => t.id !== id);
+            saveDayData();
+            showToast('일정이 삭제되었습니다.');
+        };
+
+        window.toggleGoalDone = function(idx) {
+            state.dayData.goals[idx].done = !state.dayData.goals[idx].done;
+            saveDayData();
+        };
+
+        window.updateGoalText = function(idx, text) {
+            state.dayData.goals[idx].text = text.trim();
+            saveDayData();
+        };
+
+        window.applyTeacherTemplate = function(key) {
+            const items = TEACHER_TEMPLATES[key];
+            if (!items) return;
+            const added = items.map(item => ({
+                id: crypto.randomUUID(),
+                title: item.title,
+                start: item.start,
+                end: item.end,
+                category: item.category,
+                note: item.note,
+                completed: false
+            }));
+            state.dayData.tasks = [...state.dayData.tasks, ...added];
+            saveDayData();
+            showToast('교사 일과 블록이 추가되었습니다!');
+        };
+
+        // 모달 열기/닫기 헬퍼
+        window.closeTaskModal = () => { document.getElementById('task-modal').classList.replace('flex', 'hidden'); };
+        window.closeTimetableModal = () => { document.getElementById('timetable-modal').classList.replace('flex', 'hidden'); };
+        window.closeAlarmModal = () => { document.getElementById('alarm-modal').classList.replace('flex', 'hidden'); };
+        window.closeFirebaseModal = () => { document.getElementById('firebase-modal').classList.replace('flex', 'hidden'); };
+
+        function renderTimetableModalGrid() {
+            const tbody = document.getElementById('timetable-grid-body');
+            const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
+            tbody.innerHTML = state.timetable.periods.map((p, idx) => `
+                <tr style="border-bottom: 1px solid var(--border-card);">
+                    <td class="p-2.5 border-r" style="border-color: var(--border-card); background-color: var(--bg-card-subtle);">
+                        <div class="font-bold mb-1">${p.label}</div>
+                        <div class="flex items-center gap-1">
+                            <input type="time" data-pidx="${idx}" data-field="start" value="${p.start}" class="tt-time-input w-full rounded px-1 py-0.5 text-[11px] font-mono border" style="background-color: var(--bg-card); border-color: var(--border-card);">
+                            <span>~</span>
+                            <input type="time" data-pidx="${idx}" data-field="end" value="${p.end}" class="tt-time-input w-full rounded px-1 py-0.5 text-[11px] font-mono border" style="background-color: var(--bg-card); border-color: var(--border-card);">
+                        </div>
+                    </td>
+                    ${days.map(day => {
+                        const val = (state.timetable.schedule[day] && state.timetable.schedule[day][p.period]) || '';
+                        return `
+                        <td class="p-1.5 border-r last:border-r-0" style="border-color: var(--border-card);">
+                            <input type="text" data-day="${day}" data-period="${p.period}" value="${escapeHtml(val)}" placeholder="공강"
+                                class="tt-cell-input w-full px-2 py-2 rounded-xl text-center font-semibold focus:outline-none border transition-all"
+                                style="${val
+                                    ? 'background-color: var(--class-badge-bg); color: var(--class-badge-text); border-color: var(--class-border);'
+                                    : 'background-color: var(--bg-card); border-color: transparent;'}">
+                        </td>`;
+                    }).join('')}
+                </tr>
+            `).join('');
+        }
+
+        function updateAlarmHeaderUI() {
+            const label = document.getElementById('alarm-header-label');
+            if (state.alarmSettings.enabled) {
+                label.textContent = Number(state.alarmSettings.leadMinutes) === 0 ? '정시 알림' : `${state.alarmSettings.leadMinutes}분 전 알림`;
+            } else {
+                label.textContent = '알림 꺼짐';
+            }
+        }
+
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'theme-card px-4 py-3 text-xs font-semibold shadow-lg flex items-center gap-2 pointer-events-auto';
+            toast.innerHTML = `<span class="w-2 h-2 rounded-full" style="background-color: ${type === 'error' ? '#E11D48' : 'var(--accent-main)'};"></span><span>${escapeHtml(msg)}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3200);
+        }
+
+        function showConfirm(title, message) {
+            return new Promise(resolve => {
+                const modal = document.getElementById('confirm-modal');
+                document.getElementById('confirm-title').textContent = title;
+                document.getElementById('confirm-message').textContent = message;
+                modal.classList.replace('hidden', 'flex');
+
+                const cleanup = (res) => {
+                    modal.classList.replace('flex', 'hidden');
+                    resolve(res);
+                };
+                document.getElementById('confirm-ok-btn').onclick = () => cleanup(true);
+                document.getElementById('confirm-cancel-btn').onclick = () => cleanup(false);
+            });
+        }
+
+        // ------------------------------------------
+        // 7. 초기화 및 이벤트 바인딩
+        // ------------------------------------------
+        document.addEventListener('DOMContentLoaded', async () => {
+            setTheme(state.theme);
+
+            const datePicker = document.getElementById('date-picker');
+            datePicker.value = state.selectedDate;
+
+            datePicker.addEventListener('change', (e) => {
+                if (e.target.value) {
+                    state.selectedDate = e.target.value;
+                    loadDayData(state.selectedDate);
+                }
+            });
+
+            document.getElementById('btn-prev-day').addEventListener('click', () => {
+                const d = new Date(state.selectedDate + 'T00:00:00');
+                d.setDate(d.getDate() - 1);
+                state.selectedDate = d.toISOString().split('T')[0];
+                datePicker.value = state.selectedDate;
+                loadDayData(state.selectedDate);
+            });
+
+            document.getElementById('btn-next-day').addEventListener('click', () => {
+                const d = new Date(state.selectedDate + 'T00:00:00');
+                d.setDate(d.getDate() + 1);
+                state.selectedDate = d.toISOString().split('T')[0];
+                datePicker.value = state.selectedDate;
+                loadDayData(state.selectedDate);
+            });
+
+            document.getElementById('btn-today').addEventListener('click', () => {
+                state.selectedDate = getTodayStr();
+                datePicker.value = state.selectedDate;
+                loadDayData(state.selectedDate);
+            });
+
+            document.getElementById('category-filter').addEventListener('change', (e) => {
+                state.filterCategory = e.target.value;
+                renderTimeline();
+            });
+
+            // 새 일정 모달
+            initEmojiPicker();
+            document.getElementById('btn-open-add-modal').addEventListener('click', () => {
+                document.getElementById('task-modal-title').textContent = '📝 새 일정 · 할 일 등록';
+                document.getElementById('task-form').reset();
+                document.getElementById('task-id').value = '';
+                const now = new Date();
+                const sh = String(now.getHours()).padStart(2, '0');
+                const eh = String((now.getHours() + 1) % 24).padStart(2, '0');
+                document.getElementById('task-start').value = `${sh}:00`;
+                document.getElementById('task-end').value = `${eh}:00`;
+                setSelectedEmoji('🌱');
+                document.getElementById('task-modal').classList.replace('hidden', 'flex');
+                document.getElementById('task-title').focus();
+            });
+
+            document.getElementById('task-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const id = document.getElementById('task-id').value;
+                const title = document.getElementById('task-title').value.trim();
+                const start = document.getElementById('task-start').value;
+                const end = document.getElementById('task-end').value;
+                const note = document.getElementById('task-note').value.trim();
+                const category = document.querySelector('input[name="task-category"]:checked')?.value || 'todo';
+                const emoji = document.getElementById('task-emoji').value || suggestEmojiFromText(title, category);
+
+                if (start >= end) {
+                    showToast('종료 시각은 시작 시각보다 뒤여야 합니다.', 'error');
+                    return;
+                }
+
+                if (id) {
+                    const idx = state.dayData.tasks.findIndex(t => t.id === id);
+                    if (idx !== -1) state.dayData.tasks[idx] = { ...state.dayData.tasks[idx], title, start, end, note, category, emoji };
+                } else {
+                    state.dayData.tasks.push({ id: crypto.randomUUID(), title, start, end, note, category, emoji, completed: false });
+                }
+                saveDayData();
+                closeTaskModal();
+                showToast(`${emoji} 일정이 저장되었습니다!`);
+            });
+
+            // 주간 시간표 모달
+            document.getElementById('btn-open-timetable').addEventListener('click', () => {
+                renderTimetableModalGrid();
+                document.getElementById('timetable-modal').classList.replace('hidden', 'flex');
+            });
+
+            document.getElementById('btn-fill-sample-timetable').addEventListener('click', () => {
+                state.timetable.schedule = {
+                    mon: { 1: '3-2 국어', 3: '3-1 국어', 5: '3-3 국어' },
+                    tue: { 2: '3-2 국어', 4: '3-4 국어', 6: '창체(독서반)' },
+                    wed: { 1: '3-1 국어', 2: '3-3 국어', 5: '3-4 국어' },
+                    thu: { 1: '3-2 국어', 3: '3-4 국어', 6: '3-1 국어' },
+                    fri: { 2: '3-3 국어', 4: '3-2 국어', 5: '학급 자치' }
+                };
+                renderTimetableModalGrid();
+                showToast('예시 수업 시간표가 채워졌습니다. 저장 버튼을 눌러주세요.');
+            });
+
+            document.getElementById('btn-save-timetable').addEventListener('click', async () => {
+                document.querySelectorAll('.tt-time-input').forEach(inp => {
+                    const pidx = Number(inp.dataset.pidx);
+                    const field = inp.dataset.field;
+                    if (state.timetable.periods[pidx] && inp.value) state.timetable.periods[pidx][field] = inp.value;
+                });
+                const newSched = { mon: {}, tue: {}, wed: {}, thu: {}, fri: {} };
+                document.querySelectorAll('.tt-cell-input').forEach(inp => {
+                    const val = inp.value.trim();
+                    if (val) newSched[inp.dataset.day][inp.dataset.period] = val;
+                });
+                state.timetable.schedule = newSched;
+                await saveTimetableData();
+                closeTimetableModal();
+                showToast('주간 고정 수업 시간표가 반영되었습니다.');
+            });
+
+            // 알림 설정 모달
+            document.getElementById('btn-open-alarm').addEventListener('click', () => {
+                document.getElementById('alarm-enabled-toggle').checked = state.alarmSettings.enabled;
+                document.getElementById('alarm-sound-toggle').checked = state.alarmSettings.sound;
+                const radio = document.querySelector(`input[name="alarm-lead"][value="${state.alarmSettings.leadMinutes}"]`);
+                if (radio) radio.checked = true;
+                document.getElementById('alarm-modal').classList.replace('hidden', 'flex');
+            });
+
+            document.getElementById('btn-request-notif-perm').addEventListener('click', async () => {
+                if (!('Notification' in window)) return;
+                const perm = await Notification.requestPermission();
+                showToast(perm === 'granted' ? '데스크톱 알림 권한이 허용되었습니다.' : '알림 권한이 거부되었습니다.');
+            });
+
+            document.getElementById('btn-test-alarm').addEventListener('click', () => {
+                const lead = Number(document.querySelector('input[name="alarm-lead"]:checked')?.value || 10);
+                const prevSound = state.alarmSettings.sound;
+                state.alarmSettings.sound = document.getElementById('alarm-sound-toggle').checked;
+                triggerPreStartNotification({ title: '3학년 2반 수업 (알림 테스트)', start: '10:00', end: '10:45' }, lead);
+                state.alarmSettings.sound = prevSound;
+            });
+
+            document.getElementById('btn-save-alarm').addEventListener('click', () => {
+                state.alarmSettings.enabled = document.getElementById('alarm-enabled-toggle').checked;
+                state.alarmSettings.sound = document.getElementById('alarm-sound-toggle').checked;
+                state.alarmSettings.leadMinutes = Number(document.querySelector('input[name="alarm-lead"]:checked')?.value || 10);
+                localStorage.setItem(LS_ALARM_KEY, JSON.stringify(state.alarmSettings));
+                updateAlarmHeaderUI();
+                closeAlarmModal();
+                showToast('미리 알림 설정이 저장되었습니다.');
+            });
+
+            // Firebase 모달
+            document.getElementById('btn-open-firebase').addEventListener('click', () => {
+                document.getElementById('firebase-config-input').value = localStorage.getItem(LS_CONFIG_KEY) || '';
+                document.getElementById('firebase-modal').classList.replace('hidden', 'flex');
+            });
+
+            document.getElementById('btn-save-firebase').addEventListener('click', async () => {
+                const raw = document.getElementById('firebase-config-input').value.trim();
+                if (!raw) return;
+                try {
+                    const parsed = JSON.parse(raw);
+                    localStorage.setItem(LS_CONFIG_KEY, JSON.stringify(parsed));
+                    const ok = await initFirebaseFromConfig(parsed);
+                    if (ok) {
+                        closeFirebaseModal();
+                        showToast('Firebase 클라우드에 연결되었습니다!');
+                    }
+                } catch {
+                    showToast('올바른 JSON 형식의 firebaseConfig를 입력해 주세요.', 'error');
+                }
+            });
+
+            document.getElementById('btn-reset-firebase').addEventListener('click', () => {
+                localStorage.removeItem(LS_CONFIG_KEY);
+                state.isFirebaseConnected = false;
+                updateConnectionBadge(false);
+                closeFirebaseModal();
+                loadDayData(state.selectedDate);
+                showToast('로컬 보관 모드로 전환되었습니다.');
+            });
+
+            // 데일리 메모 디바운스 자동 저장
+            let memoTimer = null;
+            document.getElementById('daily-memo').addEventListener('input', (e) => {
+                document.getElementById('memo-save-status').textContent = '적는 중...';
+                clearTimeout(memoTimer);
+                memoTimer = setTimeout(() => {
+                    state.dayData.memo = e.target.value;
+                    saveDayData();
+                    document.getElementById('memo-save-status').textContent = '저장 완료';
+                }, 500);
+            });
+
+            // 초기 데이터 & 알림 설정 로드
+            try {
+                const savedAlarm = JSON.parse(localStorage.getItem(LS_ALARM_KEY));
+                if (savedAlarm) state.alarmSettings = { ...state.alarmSettings, ...savedAlarm };
+            } catch {}
+            updateAlarmHeaderUI();
+
+            const savedConfigStr = localStorage.getItem(LS_CONFIG_KEY);
+            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                await initFirebaseFromConfig(JSON.parse(__firebase_config));
+            } else if (savedConfigStr) {
+                try {
+                    await initFirebaseFromConfig(JSON.parse(savedConfigStr));
+                } catch {
+                    subscribeTimetable();
+                    loadDayData(state.selectedDate);
+                }
+            } else {
+                subscribeTimetable();
+                loadDayData(state.selectedDate);
+            }
+
+            lucide.createIcons();
+            setInterval(updateLiveScheduleBanner, 1000);
+        });
+    </script>
+</body>
+</html>
