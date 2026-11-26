@@ -1153,4 +1153,27 @@
       const tStr = todayISO();
       const nowMin = now.getHours() * 60 + now.getMinutes();
       buildDayEntries(tStr).forEach((item) => {
-        const trig
+        const trig = toMin(item.start) - Number(state.alarmLead || 0);
+        const key = `${tStr}_${item.id}_${trig}`;
+        if (nowMin === trig && !firedAlarms.has(key)) {
+          firedAlarms.add(key);
+          showAlarm(
+            `🔔 ${state.alarmLead > 0 ? state.alarmLead + "분 전 알림" : "정시 시작"}: ${item.title}`,
+            `${item.start} ~ ${item.end}`
+          );
+        }
+      });
+    }
+
+    // 초기화
+    loadSaved();
+    document.getElementById("selectedDate").value = todayISO();
+    updateAlarmLabel();
+    setTheme(state.theme || "paper");
+    renderAll();
+    tickClockAndAlarms();
+    setInterval(tickClockAndAlarms, 1000);
+    setInterval(renderAll, 30000);
+  </script>
+</body>
+</html>
