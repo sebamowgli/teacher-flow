@@ -13,7 +13,7 @@
       --bg-card: #ffffff;
       --bg-subtle: #f2ece4;
       --bg-hero: #4a3728;
-      --bg-hero-sub: rgba(255, 250, 244, 0.08);
+      --bg-hero-sub: rgba(255, 250, 244, 0.09);
       --text-main: #2b2119;
       --text-muted: #78695c;
       --text-hero: #fffaf4;
@@ -32,7 +32,7 @@
       --bg-card: #ffffff;
       --bg-subtle: #e0ece4;
       --bg-hero: #234737;
-      --bg-hero-sub: rgba(255, 255, 255, 0.09);
+      --bg-hero-sub: rgba(255, 255, 255, 0.1);
       --text-main: #1a3026;
       --text-muted: #567365;
       --text-hero: #f4fbf7;
@@ -51,7 +51,7 @@
       --bg-card: #ffffff;
       --bg-subtle: #f1e8f7;
       --bg-hero: #584375;
-      --bg-hero-sub: rgba(255, 255, 255, 0.1);
+      --bg-hero-sub: rgba(255, 255, 255, 0.11);
       --text-main: #2f243d;
       --text-muted: #76668c;
       --text-hero: #fdfaff;
@@ -65,7 +65,12 @@
       --shadow-card: 0 10px 28px -8px rgba(88, 67, 117, 0.1);
     }
 
+    * {
+      box-sizing: border-box;
+    }
+
     body {
+      margin: 0;
       background-color: var(--bg-page);
       color: var(--text-main);
       font-family: var(--font-body);
@@ -87,6 +92,23 @@
       background: var(--bg-subtle);
       border: 1px solid var(--border-soft);
     }
+
+    .btn-accent {
+      background-color: var(--accent);
+      color: #ffffff;
+    }
+
+    .btn-accent:hover {
+      filter: brightness(0.95);
+    }
+
+    .text-accent {
+      color: var(--accent);
+    }
+
+    .border-accent-hover:hover {
+      border-color: var(--accent);
+    }
   </style>
 </head>
 <body class="min-h-screen pb-20" data-theme="paper">
@@ -99,14 +121,14 @@
         <div id="alarmDesc" class="text-xs text-amber-800 mt-0.5">곧 예정된 일정이 시작됩니다.</div>
       </div>
     </div>
-    <button onclick="dismissAlarmBanner()" class="px-3 py-1.5 rounded-xl bg-amber-200 hover:bg-amber-300 text-xs font-bold">확인</button>
+    <button type="button" onclick="dismissAlarmBanner()" class="px-3 py-1.5 rounded-xl bg-amber-200 hover:bg-amber-300 text-xs font-bold cursor-pointer">확인</button>
   </div>
 
   <!-- 최상단 헤더 -->
   <header class="max-w-5xl mx-auto px-4 pt-6 pb-4">
     <div class="flex flex-wrap items-center justify-between gap-4">
       <div class="flex items-center gap-3">
-        <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-2xl bg-[var(--accent-soft)] border border-[var(--border-soft)]">
+        <div style="background: var(--accent-soft); border-color: var(--border-soft);" class="w-11 h-11 rounded-2xl flex items-center justify-center text-2xl border">
           🌷
         </div>
         <div>
@@ -117,58 +139,58 @@
             </span>
             <span class="text-base">✨</span>
           </div>
-          <p class="text-xs text-[var(--text-muted)]">여유로운 교사의 하루 일과 &amp; 수업 다이어리 🌱</p>
+          <p class="text-xs" style="color: var(--text-muted);">여유로운 교사의 하루 일과 &amp; 수업 다이어리 🌱</p>
         </div>
       </div>
 
       <!-- 테마 전환 세그먼트 -->
-      <div class="flex items-center gap-1 p-1.5 rounded-full theme-subtle">
-        <button onclick="setTheme('paper')" id="themeBtn-paper" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition">📔 따뜻한 다이어리</button>
-        <button onclick="setTheme('forest')" id="themeBtn-forest" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition">🌿 숲속 산책</button>
-        <button onclick="setTheme('pastel')" id="themeBtn-pastel" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition">🌸 포근한 파스텔</button>
+      <div class="flex items-center gap-1 p-1.5 rounded-full theme-subtle flex-wrap">
+        <button type="button" onclick="setTheme('paper')" id="themeBtn-paper" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition cursor-pointer">📔 따뜻한 다이어리</button>
+        <button type="button" onclick="setTheme('forest')" id="themeBtn-forest" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition cursor-pointer">🌿 숲속 산책</button>
+        <button type="button" onclick="setTheme('pastel')" id="themeBtn-pastel" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition cursor-pointer">🌸 포근한 파스텔</button>
       </div>
     </div>
 
     <!-- 기능 칩 바 -->
     <div class="flex flex-wrap items-center gap-2 mt-4">
-      <button onclick="openTimetableModal()" class="px-3.5 py-2 rounded-full text-xs font-bold theme-card hover:border-[var(--accent)] transition flex items-center gap-1.5">
+      <button type="button" onclick="openTimetableModal()" class="px-3.5 py-2 rounded-full text-xs font-bold theme-card border-accent-hover transition flex items-center gap-1.5 cursor-pointer">
         <span>🗓️</span>
         <span>시간표 등록</span>
       </button>
 
-      <button onclick="openDutyModal()" class="px-3.5 py-2 rounded-full text-xs font-bold theme-card hover:border-[var(--accent)] transition flex items-center gap-1.5">
+      <button type="button" onclick="openDutyModal()" class="px-3.5 py-2 rounded-full text-xs font-bold theme-card border-accent-hover transition flex items-center gap-1.5 cursor-pointer">
         <span>🚩</span>
         <span>등교·급식지도 등록</span>
       </button>
 
-      <button onclick="cycleAlarmLead()" id="alarmChipBtn" class="px-3.5 py-2 rounded-full text-xs font-bold theme-card hover:border-[var(--accent)] transition flex items-center gap-1.5">
+      <button type="button" onclick="cycleAlarmLead()" id="alarmChipBtn" class="px-3.5 py-2 rounded-full text-xs font-bold theme-card border-accent-hover transition flex items-center gap-1.5 cursor-pointer">
         <span>🔔</span>
         <span id="alarmLeadLabel">10분 전 알림</span>
       </button>
 
-      <button onclick="testAlarm()" class="px-3.5 py-2 rounded-full text-xs font-bold theme-card hover:border-[var(--accent)] transition flex items-center gap-1.5">
+      <button type="button" onclick="testAlarm()" class="px-3.5 py-2 rounded-full text-xs font-bold theme-card border-accent-hover transition flex items-center gap-1.5 cursor-pointer">
         <span>🎵</span>
         <span>알림 테스트</span>
       </button>
 
       <div id="syncChip" class="px-3.5 py-2 rounded-full text-xs font-bold theme-card flex items-center gap-1.5 text-emerald-700">
         <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-        <span id="syncChipText">클라우드 동기화 연결중</span>
+        <span id="syncChipText">로컬 저장 준비 완료</span>
       </div>
     </div>
   </header>
 
   <!-- 당일 등교·급식지도 안내 배너 -->
   <section id="todayDutyBannerWrap" class="hidden max-w-5xl mx-auto px-4 mb-4">
-    <div class="theme-card p-4 border-l-4 flex flex-wrap items-center justify-between gap-3" style="border-left-color: var(--accent);">
+    <div style="border-left-color: var(--accent);" class="theme-card p-4 border-l-4 flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-start gap-3">
         <span class="text-2xl">🚩</span>
         <div>
-          <div class="text-xs font-bold text-[var(--accent)]">오늘 지정된 지도·당번 일정 안내</div>
+          <div class="text-xs font-bold text-accent">오늘 지정된 지도·당번 일정 안내</div>
           <div id="todayDutyListText" class="text-sm font-bold mt-0.5"></div>
         </div>
       </div>
-      <button onclick="openDutyModal()" class="px-3 py-1.5 rounded-xl text-xs font-bold theme-subtle hover:border-[var(--accent)]">
+      <button type="button" onclick="openDutyModal()" class="px-3 py-1.5 rounded-xl text-xs font-bold theme-subtle border-accent-hover cursor-pointer">
         지도 일정 관리 →
       </button>
     </div>
@@ -177,16 +199,15 @@
   <!-- 메인 히어로 브리핑 카드 -->
   <section class="max-w-5xl mx-auto px-4 mb-6">
     <div style="background: var(--bg-hero); color: var(--text-hero); border-radius: 28px;" class="p-6 md:p-7 shadow-xl">
-      <!-- 날짜 컨트롤 바 -->
       <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
         <div style="background: var(--bg-hero-sub); border-color: rgba(255,255,255,0.14);" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm">
-          <button onclick="shiftDate(-1)" class="px-1.5 hover:opacity-75">◀</button>
+          <button type="button" onclick="shiftDate(-1)" class="px-1.5 hover:opacity-75 cursor-pointer">◀</button>
           <input type="date" id="selectedDate" onchange="renderAll()" class="bg-transparent text-white font-semibold text-sm focus:outline-none cursor-pointer" />
-          <button onclick="shiftDate(1)" class="px-1.5 hover:opacity-75">▶</button>
+          <button type="button" onclick="shiftDate(1)" class="px-1.5 hover:opacity-75 cursor-pointer">▶</button>
         </div>
 
         <div class="flex items-center gap-2">
-          <button onclick="goToday()" style="background: var(--bg-hero-sub); border-color: rgba(255,255,255,0.14);" class="px-3.5 py-1.5 rounded-full border text-xs font-bold hover:opacity-85">
+          <button type="button" onclick="goToday()" style="background: var(--bg-hero-sub); border-color: rgba(255,255,255,0.14);" class="px-3.5 py-1.5 rounded-full border text-xs font-bold hover:opacity-85 cursor-pointer">
             📌 오늘로 돌아오기
           </button>
           <div id="liveClockBadge" style="background: var(--bg-hero-sub); border-color: rgba(255,255,255,0.14);" class="px-3.5 py-1.5 rounded-full border text-xs font-mono font-bold">
@@ -195,7 +216,6 @@
         </div>
       </div>
 
-      <!-- 인사 및 날짜 타이틀 -->
       <div class="mb-5">
         <div class="text-xs md:text-sm" style="color: var(--text-hero-muted);">
           오늘도 아이들과 함께하는 따뜻한 하루를 응원합니다 ☕ ✨
@@ -205,7 +225,6 @@
         </h2>
       </div>
 
-      <!-- 지금 이 시간 / 다음 예정 일과 -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div style="background: var(--bg-hero-sub); border-color: rgba(255,255,255,0.12);" class="p-4 rounded-2xl border">
           <div class="flex items-center justify-between text-xs mb-1.5" style="color: var(--text-hero-muted);">
@@ -227,7 +246,6 @@
         </div>
       </div>
 
-      <!-- 오늘의 일과 발자취 프로그레스 -->
       <div style="background: var(--bg-hero-sub); border-color: rgba(255,255,255,0.12);" class="p-4 rounded-2xl border">
         <div class="flex items-center justify-between text-xs mb-2" style="color: var(--text-hero-muted);">
           <span>🏅 오늘의 일과 발자취</span>
@@ -238,7 +256,7 @@
           <span class="text-xs" style="color: var(--text-hero-muted);">달성 ☀️</span>
         </div>
         <div class="w-full h-2.5 rounded-full bg-white/15 overflow-hidden">
-          <div id="progressBarFill" class="h-full rounded-full transition-all duration-300" style="width: 0%; background: var(--accent);"></div>
+          <div id="progressBarFill" style="width: 0%; background: var(--accent);" class="h-full rounded-full transition-all duration-300"></div>
         </div>
       </div>
     </div>
@@ -248,32 +266,32 @@
   <section class="max-w-5xl mx-auto px-4 mb-5">
     <div class="theme-card p-4">
       <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-        <div class="text-xs font-bold text-[var(--text-muted)]">
+        <div class="text-xs font-bold" style="color: var(--text-muted);">
           ⚡ 자주 쓰는 일과 블록 — 클릭 한 번으로 오늘 시간 흐름에 바로 추가하세요
         </div>
         <div class="flex items-center gap-3">
-          <button onclick="openDutyModal()" class="text-xs font-bold text-[var(--accent)] hover:underline">
+          <button type="button" onclick="openDutyModal()" class="text-xs font-bold text-accent hover:underline cursor-pointer">
             🚩 등교·급식지도 추가 →
           </button>
-          <button onclick="openTimetableModal()" class="text-xs font-bold text-[var(--accent)] hover:underline">
+          <button type="button" onclick="openTimetableModal()" class="text-xs font-bold text-accent hover:underline cursor-pointer">
             🗓️ 시간표 등록 →
           </button>
         </div>
       </div>
       <div class="flex flex-wrap gap-2">
-        <button onclick="quickAddRoutine('🌅 아침 등교 및 조례', '08:20', '08:50', 'routine')" class="px-3 py-2 rounded-2xl text-xs font-bold theme-subtle hover:border-[var(--accent)] transition">
+        <button type="button" onclick="quickAddRoutine('🌅 아침 등교 및 조례', '08:20', '08:50', 'routine')" class="px-3 py-2 rounded-2xl text-xs font-bold theme-subtle border-accent-hover transition cursor-pointer">
           🌅 아침 등교·조례 (08:20~08:50)
         </button>
-        <button onclick="quickAddRoutine('🚩 등교지도', '07:50', '08:20', 'duty')" class="px-3 py-2 rounded-2xl text-xs font-bold theme-subtle hover:border-[var(--accent)] transition">
+        <button type="button" onclick="quickAddRoutine('🚩 등교지도', '07:50', '08:20', 'duty')" class="px-3 py-2 rounded-2xl text-xs font-bold theme-subtle border-accent-hover transition cursor-pointer">
           🚩 등교지도 (07:50~08:20)
         </button>
-        <button onclick="quickAddRoutine('🍽️ 급식지도', '12:50', '13:30', 'duty')" class="px-3 py-2 rounded-2xl text-xs font-bold theme-subtle hover:border-[var(--accent)] transition">
+        <button type="button" onclick="quickAddRoutine('🍽️ 급식지도', '12:50', '13:30', 'duty')" class="px-3 py-2 rounded-2xl text-xs font-bold theme-subtle border-accent-hover transition cursor-pointer">
           🍽️ 급식지도 (12:50~13:30)
         </button>
-        <button onclick="quickAddRoutine('🤝 교직원협의회', '16:40', '17:20', 'event')" class="px-3 py-2 rounded-2xl text-xs font-bold theme-subtle hover:border-[var(--accent)] transition">
+        <button type="button" onclick="quickAddRoutine('🤝 교직원협의회', '16:40', '17:20', 'event')" class="px-3 py-2 rounded-2xl text-xs font-bold theme-subtle border-accent-hover transition cursor-pointer">
           🤝 교직원협의회 (16:40~17:20)
         </button>
-        <button onclick="quickAddRoutine('🧹 하교 후 정리 및 퇴근 준비', '17:20', '18:00', 'routine')" class="px-3 py-2 rounded-2xl text-xs font-bold theme-subtle hover:border-[var(--accent)] transition">
+        <button type="button" onclick="quickAddRoutine('🧹 하교 후 정리 및 퇴근 준비', '17:20', '18:00', 'routine')" class="px-3 py-2 rounded-2xl text-xs font-bold theme-subtle border-accent-hover transition cursor-pointer">
           🧹 하교 후 정리 (17:20~18:00)
         </button>
       </div>
@@ -289,7 +307,7 @@
             <span>🍂</span>
             <span>오늘의 시간 흐름</span>
           </h3>
-          <p class="text-xs text-[var(--text-muted)] mt-1">
+          <p class="text-xs mt-1" style="color: var(--text-muted);">
             등록한 시간표·등교/급식지도·일과 블록이 표시되며, 수업 있는 시간과 요일에는 해당 학급 수업 메모를 바로 남길 수 있습니다.
           </p>
         </div>
@@ -303,7 +321,7 @@
             <option value="task">🌱 할 일만</option>
           </select>
 
-          <button onclick="openAddModal()" class="px-4 py-2 rounded-full text-xs font-bold text-white bg-[var(--accent)] hover:opacity-90 shadow-sm">
+          <button type="button" onclick="openAddModal()" class="px-4 py-2 rounded-full text-xs font-bold btn-accent shadow-sm cursor-pointer">
             + 일정 추가
           </button>
         </div>
@@ -320,7 +338,7 @@
             <span>📝</span>
             <span>오늘의 공통 교사 메모</span>
           </h4>
-          <span class="text-[11px] text-[var(--text-muted)]">자동 저장됨</span>
+          <span class="text-[11px]" style="color: var(--text-muted);">자동 저장됨</span>
         </div>
         <textarea id="dayMemo" rows="3" oninput="saveMemo(this.value)" placeholder="오늘 전체 전달사항, 학급 운영 기록을 남겨보세요 😊" class="w-full p-3 rounded-2xl theme-subtle text-sm focus:outline-none"></textarea>
       </div>
@@ -331,19 +349,19 @@
             <span>🗓️</span>
             <span>등록된 주간 시간표 요약</span>
           </h4>
-          <button onclick="openTimetableModal()" class="text-xs font-bold text-[var(--accent)] hover:underline">시간표 등록·수정</button>
+          <button type="button" onclick="openTimetableModal()" class="text-xs font-bold text-accent hover:underline cursor-pointer">시간표 등록·수정</button>
         </div>
-        <div id="timetableSummaryBox" class="text-xs text-[var(--text-muted)] space-y-1.5"></div>
+        <div id="timetableSummaryBox" class="text-xs space-y-1.5" style="color: var(--text-muted);"></div>
       </div>
     </div>
   </main>
 
   <!-- 일정 추가 모달 -->
-  <div id="addModal" class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+  <div id="addModal" class="hidden fixed inset-0 z-50 bg-black/45 flex items-center justify-center p-4">
     <div class="theme-card w-full max-w-md p-6 space-y-4">
       <div class="flex items-center justify-between">
         <h3 class="text-lg font-bold font-display-theme">✨ 오늘 시간 흐름에 일정 추가</h3>
-        <button onclick="closeAddModal()" class="px-2.5 py-1 rounded-xl text-xs font-bold theme-subtle">✕</button>
+        <button type="button" onclick="closeAddModal()" class="px-2.5 py-1 rounded-xl text-xs font-bold theme-subtle cursor-pointer">✕</button>
       </div>
 
       <div>
@@ -379,25 +397,25 @@
       </div>
 
       <div class="flex justify-end gap-2 pt-2">
-        <button onclick="closeAddModal()" class="px-4 py-2 rounded-xl text-xs font-bold theme-subtle">취소</button>
-        <button onclick="saveCustomItem()" class="px-4 py-2 rounded-xl text-xs font-bold text-white bg-[var(--accent)]">추가하기</button>
+        <button type="button" onclick="closeAddModal()" class="px-4 py-2 rounded-xl text-xs font-bold theme-subtle cursor-pointer">취소</button>
+        <button type="button" onclick="saveCustomItem()" class="px-4 py-2 rounded-xl text-xs font-bold btn-accent cursor-pointer">추가하기</button>
       </div>
     </div>
   </div>
 
-  <!-- 시간표 등록 모달 (교시 시간은 각 교시 칸 안에서 직접 설정) -->
+  <!-- 시간표 등록 모달 (교시 시간은 각 교시 칸 안에서 설정) -->
   <div id="timetableModal" class="hidden fixed inset-0 z-50 bg-black/45 flex items-center justify-center p-4">
     <div class="theme-card w-full max-w-5xl max-h-[90vh] overflow-y-auto p-6 space-y-4">
       <div class="flex items-center justify-between gap-2 flex-wrap">
         <div>
           <h3 class="text-lg font-bold font-display-theme">🗓️ 주간 수업 시간표 등록 (월~금)</h3>
-          <p class="text-xs text-[var(--text-muted)]">각 교시 칸에서 시작·종료 시각을 바로 설정할 수 있고, 요일 칸을 눌러 과목·학급을 등록할 수 있습니다.</p>
+          <p class="text-xs" style="color: var(--text-muted);">각 교시 칸에서 시작·종료 시각을 바로 설정할 수 있고, 요일 칸을 눌러 과목·학급을 등록할 수 있습니다.</p>
         </div>
         <div class="flex items-center gap-2">
-          <button onclick="resetPeriodTimes()" class="px-3 py-1.5 rounded-xl text-xs font-bold theme-subtle hover:border-[var(--accent)]">
+          <button type="button" onclick="resetPeriodTimes()" class="px-3 py-1.5 rounded-xl text-xs font-bold theme-subtle border-accent-hover cursor-pointer">
             기본 교시시간 복원
           </button>
-          <button onclick="closeTimetableModal()" class="px-3 py-1.5 rounded-xl text-xs font-bold theme-subtle">닫기 ✕</button>
+          <button type="button" onclick="closeTimetableModal()" class="px-3 py-1.5 rounded-xl text-xs font-bold theme-subtle cursor-pointer">닫기 ✕</button>
         </div>
       </div>
 
@@ -405,12 +423,12 @@
         <table class="w-full border-collapse text-xs min-w-[680px]">
           <thead>
             <tr class="theme-subtle text-left">
-              <th class="p-2.5 border border-[var(--border-soft)] w-36">교시 · 시간 설정</th>
-              <th class="p-2.5 border border-[var(--border-soft)]">월요일</th>
-              <th class="p-2.5 border border-[var(--border-soft)]">화요일</th>
-              <th class="p-2.5 border border-[var(--border-soft)]">수요일</th>
-              <th class="p-2.5 border border-[var(--border-soft)]">목요일</th>
-              <th class="p-2.5 border border-[var(--border-soft)]">금요일</th>
+              <th class="p-2.5 border w-36" style="border-color: var(--border-soft);">교시 · 시간 설정</th>
+              <th class="p-2.5 border" style="border-color: var(--border-soft);">월요일</th>
+              <th class="p-2.5 border" style="border-color: var(--border-soft);">화요일</th>
+              <th class="p-2.5 border" style="border-color: var(--border-soft);">수요일</th>
+              <th class="p-2.5 border" style="border-color: var(--border-soft);">목요일</th>
+              <th class="p-2.5 border" style="border-color: var(--border-soft);">금요일</th>
             </tr>
           </thead>
           <tbody id="timetableModalBody"></tbody>
@@ -425,20 +443,20 @@
       <div class="flex items-center justify-between">
         <div>
           <h3 class="text-lg font-bold font-display-theme">🚩 등교지도·급식지도 사전 등록</h3>
-          <p class="text-xs text-[var(--text-muted)]">날짜를 미리 등록해 두면 해당 날짜를 조회하거나 당일이 되었을 때 상단 배너와 시간 흐름에 자동으로 알려줍니다.</p>
+          <p class="text-xs" style="color: var(--text-muted);">날짜를 미리 등록해 두면 해당 날짜를 조회하거나 당일이 되었을 때 상단 배너와 시간 흐름에 자동으로 알려줍니다.</p>
         </div>
-        <button onclick="closeDutyModal()" class="px-2.5 py-1 rounded-xl text-xs font-bold theme-subtle">✕</button>
+        <button type="button" onclick="closeDutyModal()" class="px-2.5 py-1 rounded-xl text-xs font-bold theme-subtle cursor-pointer">✕</button>
       </div>
 
       <div class="p-4 rounded-2xl theme-subtle space-y-3">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-bold mb-1">지도 날짜</label>
-            <input id="dutyDateInput" type="date" class="w-full p-2 rounded-xl bg-white border border-[var(--border-soft)] text-xs" />
+            <input id="dutyDateInput" type="date" style="border-color: var(--border-soft);" class="w-full p-2 rounded-xl bg-white border text-xs" />
           </div>
           <div>
             <label class="block text-xs font-bold mb-1">지도 구분</label>
-            <select id="dutyTypeInput" onchange="applyDutyPresetTime()" class="w-full p-2 rounded-xl bg-white border border-[var(--border-soft)] text-xs">
+            <select id="dutyTypeInput" onchange="applyDutyPresetTime()" style="border-color: var(--border-soft);" class="w-full p-2 rounded-xl bg-white border text-xs">
               <option value="등교지도">🚩 등교지도 (07:50~08:20)</option>
               <option value="급식지도">🍽️ 급식지도 (12:50~13:30)</option>
               <option value="하교지도">🚶 하교지도 (16:40~17:00)</option>
@@ -450,20 +468,20 @@
         <div class="grid grid-cols-3 gap-2">
           <div>
             <label class="block text-xs font-bold mb-1">시작 시각</label>
-            <input id="dutyStartInput" type="time" value="07:50" class="w-full p-2 rounded-xl bg-white border border-[var(--border-soft)] text-xs" />
+            <input id="dutyStartInput" type="time" value="07:50" style="border-color: var(--border-soft);" class="w-full p-2 rounded-xl bg-white border text-xs" />
           </div>
           <div>
             <label class="block text-xs font-bold mb-1">종료 시각</label>
-            <input id="dutyEndInput" type="time" value="08:20" class="w-full p-2 rounded-xl bg-white border border-[var(--border-soft)] text-xs" />
+            <input id="dutyEndInput" type="time" value="08:20" style="border-color: var(--border-soft);" class="w-full p-2 rounded-xl bg-white border text-xs" />
           </div>
           <div>
             <label class="block text-xs font-bold mb-1">구역/비고</label>
-            <input id="dutyNoteInput" type="text" placeholder="예: 정문, 2층 식당" class="w-full p-2 rounded-xl bg-white border border-[var(--border-soft)] text-xs" />
+            <input id="dutyNoteInput" type="text" placeholder="예: 정문, 2층 식당" style="border-color: var(--border-soft);" class="w-full p-2 rounded-xl bg-white border text-xs" />
           </div>
         </div>
 
         <div class="flex justify-end">
-          <button onclick="addScheduledDuty()" class="px-4 py-2 rounded-xl text-xs font-bold text-white bg-[var(--accent)]">
+          <button type="button" onclick="addScheduledDuty()" class="px-4 py-2 rounded-xl text-xs font-bold btn-accent cursor-pointer">
             + 지도 일정 등록
           </button>
         </div>
@@ -476,34 +494,7 @@
     </div>
   </div>
 
-  <!-- Firebase 연동 -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCcz6XlN0G66zGVo3sgcpA8E11MuUYwSlc",
-      authDomain: "teacher-flow-fd09b.firebaseapp.com",
-      projectId: "teacher-flow-fd09b",
-      storageBucket: "teacher-flow-fd09b.firebasestorage.app",
-      messagingSenderId: "880409549090",
-      appId: "1:880409549090:web:36ebf98014d9955035ad7b"
-    };
-
-    const syncText = document.getElementById("syncChipText");
-    try {
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
-      window.__tfCloud = {
-        saveSettings: (payload) => setDoc(doc(db, "planner_settings", "teacherflow_v3_1"), payload, { merge: true }),
-        saveDay: (dateStr, payload) => setDoc(doc(db, "planner_days", dateStr), payload, { merge: true })
-      };
-      syncText.textContent = "클라우드 동기화 · teacher-flow-fd09b";
-    } catch (e) {
-      syncText.textContent = "로컬 저장 모드";
-    }
-  </script>
-
+  <!-- 메인 앱 로직 (독립 실행 보장) -->
   <script>
     const DAYS = ["월", "화", "수", "목", "금"];
     const DEFAULT_PERIODS = [
@@ -551,26 +542,30 @@
     }
 
     function persist() {
-      localStorage.setItem("teacherflow_v3_1_state", JSON.stringify(state));
+      try {
+        localStorage.setItem("teacherflow_v3_1_state", JSON.stringify(state));
+      } catch (e) {}
       const dateStr = document.getElementById("selectedDate").value || todayISO();
       if (window.__tfCloud) {
-        window.__tfCloud.saveSettings({
-          version: "3.1",
-          theme: state.theme,
-          alarmLead: state.alarmLead,
-          periods: state.periods,
-          timetable: state.timetable,
-          classMemos: state.classMemos,
-          scheduledDuties: state.scheduledDuties
-        }).catch(() => {});
-        window.__tfCloud.saveDay(dateStr, getDay(dateStr)).catch(() => {});
+        try {
+          window.__tfCloud.saveSettings({
+            version: "3.1",
+            theme: state.theme,
+            alarmLead: state.alarmLead,
+            periods: state.periods,
+            timetable: state.timetable,
+            classMemos: state.classMemos,
+            scheduledDuties: state.scheduledDuties
+          });
+          window.__tfCloud.saveDay(dateStr, getDay(dateStr));
+        } catch (e) {}
       }
     }
 
     function loadSaved() {
-      const raw = localStorage.getItem("teacherflow_v3_1_state") || localStorage.getItem("teacherflow_v3_state");
-      if (raw) {
-        try {
+      try {
+        const raw = localStorage.getItem("teacherflow_v3_1_state") || localStorage.getItem("teacherflow_v3_state");
+        if (raw) {
           const parsed = JSON.parse(raw);
           state = {
             ...state,
@@ -583,19 +578,21 @@
             scheduledDuties: Array.isArray(parsed.scheduledDuties) ? parsed.scheduledDuties : [],
             days: parsed.days || {}
           };
-        } catch (e) {}
-      }
+        }
+      } catch (e) {}
     }
 
     function setTheme(name) {
       state.theme = name;
       document.body.setAttribute("data-theme", name);
+      const accentHex = name === "forest" ? "#2e7d5b" : name === "pastel" ? "#9d69cc" : "#c46d49";
+      const textHex = name === "forest" ? "#1a3026" : name === "pastel" ? "#2f243d" : "#2b2119";
       ["paper", "forest", "pastel"].forEach((t) => {
         const b = document.getElementById("themeBtn-" + t);
         if (!b) return;
         const active = t === name;
-        b.style.background = active ? "var(--accent)" : "transparent";
-        b.style.color = active ? "#ffffff" : "var(--text-main)";
+        b.style.backgroundColor = active ? accentHex : "transparent";
+        b.style.color = active ? "#ffffff" : textHex;
       });
       persist();
     }
@@ -727,7 +724,7 @@
 
       if (shown.length === 0) {
         container.innerHTML = `
-          <div class="p-8 rounded-2xl theme-subtle text-center text-sm text-[var(--text-muted)]">
+          <div style="color: var(--text-muted);" class="p-8 rounded-2xl theme-subtle text-center text-sm">
             <div class="text-2xl mb-1.5">🍃</div>
             표시할 일정이 없습니다. 위 <strong>자주 쓰는 일과 블록</strong>을 누르거나 <strong>+ 일정 추가</strong> / <strong>시간표 등록</strong>을 활용해 보세요.
           </div>
@@ -750,12 +747,12 @@
 
         shown.forEach((item) => {
           const row = document.createElement("div");
-          row.className = "p-4 rounded-2xl theme-subtle transition hover:border-[var(--accent)] space-y-2.5";
+          row.className = "p-4 rounded-2xl theme-subtle border-accent-hover transition space-y-2.5";
 
           const classMemoHtml =
             item.kind === "class" && item.slotKey
-              ? `<div class="pt-2 border-t border-[var(--border-soft)]">
-                   <label class="block text-[11px] font-bold text-[var(--text-muted)] mb-1">
+              ? `<div style="border-color: var(--border-soft);" class="pt-2 border-t">
+                   <label style="color: var(--text-muted);" class="block text-[11px] font-bold mb-1">
                      ✏️ ${item.dayName}요일 ${item.period}교시 학급 수업 메모 (진도·준비물·특이사항)
                    </label>
                    <input
@@ -763,7 +760,8 @@
                      value="${escapeHtmlAttr(state.classMemos[item.slotKey] || "")}"
                      oninput="saveClassMemo('${item.slotKey}', this.value)"
                      placeholder="${item.sub} 메모를 입력하세요..."
-                     class="w-full px-3 py-1.5 rounded-xl bg-white/85 border border-[var(--border-soft)] text-xs focus:outline-none"
+                     style="border-color: var(--border-soft);"
+                     class="w-full px-3 py-1.5 rounded-xl bg-white/90 border text-xs focus:outline-none"
                    />
                  </div>`
               : "";
@@ -771,8 +769,8 @@
           row.innerHTML = `
             <div class="flex flex-wrap items-center justify-between gap-3">
               <div class="flex items-center gap-3 min-w-0">
-                <input type="checkbox" ${item.done ? "checked" : ""} onchange="toggleDone('${item.id}')" class="w-4 h-4 accent-[var(--accent)] cursor-pointer" />
-                <span class="px-2.5 py-1 rounded-xl text-xs font-bold bg-white/80 border border-[var(--border-soft)] shrink-0">
+                <input type="checkbox" ${item.done ? "checked" : ""} onchange="toggleDone('${item.id}')" class="w-4 h-4 cursor-pointer" />
+                <span style="border-color: var(--border-soft);" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-white/90 border shrink-0">
                   ${item.start} ~ ${item.end}
                 </span>
                 <span class="text-xl">${item.emoji}</span>
@@ -783,16 +781,16 @@
                       ${badgeLabel[item.kind] || "🌱 할 일"}
                     </span>
                   </div>
-                  ${item.sub ? `<div class="text-xs text-[var(--text-muted)] mt-0.5">${item.sub}</div>` : ""}
+                  ${item.sub ? `<div style="color: var(--text-muted);" class="text-xs mt-0.5">${item.sub}</div>` : ""}
                 </div>
               </div>
               <div class="flex items-center gap-1.5">
                 ${
                   item.kind === "class"
-                    ? `<button onclick="cancelTodayClass(${item.period})" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-white/80 border border-[var(--border-soft)] hover:opacity-80">오늘 휴강</button>`
+                    ? `<button type="button" onclick="cancelTodayClass(${item.period})" style="border-color: var(--border-soft);" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-white/90 border hover:opacity-80 cursor-pointer">오늘 휴강</button>`
                     : item.id.startsWith("sched_duty_")
-                    ? `<button onclick="openDutyModal()" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-white/80 border border-[var(--border-soft)] hover:opacity-80">지도 관리</button>`
-                    : `<button onclick="removeItem('${item.id}')" class="px-2.5 py-1 rounded-xl text-xs font-bold text-rose-700 bg-white/80 border border-[var(--border-soft)] hover:opacity-80">삭제</button>`
+                    ? `<button type="button" onclick="openDutyModal()" style="border-color: var(--border-soft);" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-white/90 border hover:opacity-80 cursor-pointer">지도 관리</button>`
+                    : `<button type="button" onclick="removeItem('${item.id}')" style="border-color: var(--border-soft);" class="px-2.5 py-1 rounded-xl text-xs font-bold text-rose-700 bg-white/90 border hover:opacity-80 cursor-pointer">삭제</button>`
                 }
               </div>
             </div>
@@ -849,7 +847,7 @@
           const c = state.timetable[`${d}_${p.period}`];
           return c && c.subject ? `${p.period}교시 ${c.subject}${c.room ? `(${c.room})` : ""}` : null;
         }).filter(Boolean);
-        return `<div><strong class="text-[var(--text-main)]">${d}요일:</strong> ${list.length ? list.join(" · ") : "등록된 수업 없음"}</div>`;
+        return `<div><strong style="color: var(--text-main);">${d}요일:</strong> ${list.length ? list.join(" · ") : "등록된 수업 없음"}</div>`;
       }).join("");
     }
 
@@ -901,7 +899,6 @@
       persist();
     }
 
-    // 일정 추가 모달
     function openAddModal() {
       document.getElementById("newTitle").value = "";
       renderEmojiBar();
@@ -922,8 +919,8 @@
     function renderEmojiBar() {
       const bar = document.getElementById("emojiBar");
       bar.innerHTML = EMOJI_CHOICES.map(
-        (em) => `<button type="button" onclick="selectEmoji('${em}')" class="w-9 h-9 rounded-xl text-base flex items-center justify-center ${
-          chosenEmoji === em ? "bg-[var(--accent)] text-white" : "theme-subtle"
+        (em) => `<button type="button" onclick="selectEmoji('${em}')" class="w-9 h-9 rounded-xl text-base flex items-center justify-center cursor-pointer ${
+          chosenEmoji === em ? "btn-accent" : "theme-subtle"
         }">${em}</button>`
       ).join("");
     }
@@ -953,7 +950,6 @@
       renderAll();
     }
 
-    // 시간표 등록 모달 (교시 시간을 각 교시 칸 안에서 설정)
     function openTimetableModal() {
       renderTimetableModal();
       document.getElementById("timetableModal").classList.remove("hidden");
@@ -983,24 +979,24 @@
       tbody.innerHTML = "";
       state.periods.forEach((p, idx) => {
         const tr = document.createElement("tr");
-        let html = `<td onclick="event.stopPropagation()" class="p-2 border border-[var(--border-soft)] font-bold theme-subtle align-middle">
+        let html = `<td onclick="event.stopPropagation()" style="border-color: var(--border-soft);" class="p-2 border font-bold theme-subtle align-middle">
           <div class="text-xs mb-1.5">${p.period}교시</div>
           <div class="space-y-1">
-            <input type="time" value="${p.start}" onchange="updatePeriodTime(${idx}, 'start', this.value)" title="${p.period}교시 시작 시각" class="w-full px-1.5 py-1 rounded-lg bg-white border border-[var(--border-soft)] text-[11px] font-normal" />
-            <input type="time" value="${p.end}" onchange="updatePeriodTime(${idx}, 'end', this.value)" title="${p.period}교시 종료 시각" class="w-full px-1.5 py-1 rounded-lg bg-white border border-[var(--border-soft)] text-[11px] font-normal" />
+            <input type="time" value="${p.start}" onchange="updatePeriodTime(${idx}, 'start', this.value)" title="${p.period}교시 시작 시각" style="border-color: var(--border-soft);" class="w-full px-1.5 py-1 rounded-lg bg-white border text-[11px] font-normal" />
+            <input type="time" value="${p.end}" onchange="updatePeriodTime(${idx}, 'end', this.value)" title="${p.period}교시 종료 시각" style="border-color: var(--border-soft);" class="w-full px-1.5 py-1 rounded-lg bg-white border text-[11px] font-normal" />
           </div>
         </td>`;
         DAYS.forEach((d) => {
           const key = `${d}_${p.period}`;
           const cell = state.timetable[key];
           const memoText = state.classMemos[key] || "";
-          html += `<td onclick="editTimetableSlot('${d}', ${p.period})" class="p-2.5 border border-[var(--border-soft)] cursor-pointer hover:bg-[var(--accent-soft)] transition align-top">
+          html += `<td onclick="editTimetableSlot('${d}', ${p.period})" style="border-color: var(--border-soft);" class="p-2.5 border cursor-pointer hover:bg-amber-50/70 transition align-top">
             ${
               cell && cell.subject
                 ? `<div class="font-bold text-sm">📘 ${cell.subject}</div>
-                   <div class="text-[11px] text-[var(--text-muted)]">${cell.room || ""}</div>
-                   ${memoText ? `<div class="text-[11px] text-[var(--accent)] mt-1 truncate">✏️ ${memoText}</div>` : ""}`
-                : `<div class="text-xs text-[var(--text-muted)]">+ 시간표 등록</div>`
+                   <div style="color: var(--text-muted);" class="text-[11px]">${cell.room || ""}</div>
+                   ${memoText ? `<div class="text-[11px] text-accent mt-1 truncate">✏️ ${memoText}</div>` : ""}`
+                : `<div style="color: var(--text-muted);" class="text-xs">+ 시간표 등록</div>`
             }
           </td>`;
         });
@@ -1025,7 +1021,6 @@
       renderAll();
     }
 
-    // 등교지도·급식지도 사전 등록 모달
     function openDutyModal() {
       const selDate = document.getElementById("selectedDate").value || todayISO();
       document.getElementById("dutyDateInput").value = selDate;
@@ -1085,7 +1080,7 @@
     function renderScheduledDutyList() {
       const box = document.getElementById("scheduledDutyList");
       if (!state.scheduledDuties.length) {
-        box.innerHTML = `<div class="p-3 rounded-xl theme-subtle text-[var(--text-muted)]">아직 미리 등록된 등교·급식지도 일정이 없습니다.</div>`;
+        box.innerHTML = `<div style="color: var(--text-muted);" class="p-3 rounded-xl theme-subtle">아직 미리 등록된 등교·급식지도 일정이 없습니다.</div>`;
         return;
       }
       box.innerHTML = state.scheduledDuties
@@ -1094,16 +1089,15 @@
           <div class="p-3 rounded-xl theme-subtle flex items-center justify-between gap-2">
             <div>
               <strong>${d.date}</strong> · <span class="font-bold">${d.type.includes("급식") ? "🍽️" : "🚩"} ${d.type}</span> (${d.start}~${d.end})
-              ${d.note ? `<span class="text-[var(--text-muted)]">· ${d.note}</span>` : ""}
+              ${d.note ? `<span style="color: var(--text-muted);">· ${d.note}</span>` : ""}
             </div>
-            <button onclick="deleteScheduledDuty('${d.id}')" class="px-2 py-1 rounded-lg bg-white border border-[var(--border-soft)] text-rose-700 font-bold">삭제</button>
+            <button type="button" onclick="deleteScheduledDuty('${d.id}')" style="border-color: var(--border-soft);" class="px-2 py-1 rounded-lg bg-white border text-rose-700 font-bold cursor-pointer">삭제</button>
           </div>
         `
         )
         .join("");
     }
 
-    // 알림 & 실시간 시계
     function playChime() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1165,7 +1159,7 @@
       });
     }
 
-    // 초기화
+    // 즉시 초기화 실행
     loadSaved();
     document.getElementById("selectedDate").value = todayISO();
     updateAlarmLabel();
@@ -1174,6 +1168,36 @@
     tickClockAndAlarms();
     setInterval(tickClockAndAlarms, 1000);
     setInterval(renderAll, 30000);
+  </script>
+
+  <!-- Firebase 클라우드 연동 (선택적 비동기 연결) -->
+  <script type="module">
+    try {
+      const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js");
+      const { getFirestore, doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js");
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyCcz6XlN0G66zGVo3sgcpA8E11MuUYwSlc",
+        authDomain: "teacher-flow-fd09b.firebaseapp.com",
+        projectId: "teacher-flow-fd09b",
+        storageBucket: "teacher-flow-fd09b.firebasestorage.app",
+        messagingSenderId: "880409549090",
+        appId: "1:880409549090:web:36ebf98014d9955035ad7b"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      window.__tfCloud = {
+        saveSettings: (payload) => setDoc(doc(db, "planner_settings", "teacherflow_v3_1"), payload, { merge: true }).catch(() => {}),
+        saveDay: (dateStr, payload) => setDoc(doc(db, "planner_days", dateStr), payload, { merge: true }).catch(() => {})
+      };
+      const chipText = document.getElementById("syncChipText");
+      if (chipText) chipText.textContent = "클라우드 동기화 · teacher-flow-fd09b";
+      if (typeof persist === "function") persist();
+    } catch (e) {
+      const chipText = document.getElementById("syncChipText");
+      if (chipText) chipText.textContent = "로컬 저장 모드";
+    }
   </script>
 </body>
 </html>
