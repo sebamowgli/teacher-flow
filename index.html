@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TeacherFlow VERSION 3.0 - 여유로운 교사의 하루 일과 & 수업 다이어리</title>
+  <title>TeacherFlow VERSION 3.1 - 여유로운 교사의 하루 일과 & 수업 다이어리</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap');
@@ -113,7 +113,7 @@
           <div class="flex items-center gap-2 flex-wrap">
             <h1 class="text-2xl font-bold font-display-theme tracking-tight">TeacherFlow</h1>
             <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
-              VERSION 3.0
+              VERSION 3.1
             </span>
             <span class="text-base">✨</span>
           </div>
@@ -133,7 +133,7 @@
     <div class="flex flex-wrap items-center gap-2 mt-4">
       <button onclick="openTimetableModal()" class="px-3.5 py-2 rounded-full text-xs font-bold theme-card hover:border-[var(--accent)] transition flex items-center gap-1.5">
         <span>🗓️</span>
-        <span>시간표·교시시간 등록</span>
+        <span>시간표 등록</span>
       </button>
 
       <button onclick="openDutyModal()" class="px-3.5 py-2 rounded-full text-xs font-bold theme-card hover:border-[var(--accent)] transition flex items-center gap-1.5">
@@ -256,7 +256,7 @@
             🚩 등교·급식지도 추가 →
           </button>
           <button onclick="openTimetableModal()" class="text-xs font-bold text-[var(--accent)] hover:underline">
-            🗓️ 시간표·교시시간 편집 →
+            🗓️ 시간표 등록 →
           </button>
         </div>
       </div>
@@ -331,7 +331,7 @@
             <span>🗓️</span>
             <span>등록된 주간 시간표 요약</span>
           </h4>
-          <button onclick="openTimetableModal()" class="text-xs font-bold text-[var(--accent)] hover:underline">시간표·시간 편집</button>
+          <button onclick="openTimetableModal()" class="text-xs font-bold text-[var(--accent)] hover:underline">시간표 등록·수정</button>
         </div>
         <div id="timetableSummaryBox" class="text-xs text-[var(--text-muted)] space-y-1.5"></div>
       </div>
@@ -385,34 +385,27 @@
     </div>
   </div>
 
-  <!-- 시간표 및 교시별 시간 등록·편집 모달 -->
+  <!-- 시간표 등록 모달 (교시 시간은 각 교시 칸 안에서 직접 설정) -->
   <div id="timetableModal" class="hidden fixed inset-0 z-50 bg-black/45 flex items-center justify-center p-4">
-    <div class="theme-card w-full max-w-5xl max-h-[90vh] overflow-y-auto p-6 space-y-5">
-      <div class="flex items-center justify-between">
+    <div class="theme-card w-full max-w-5xl max-h-[90vh] overflow-y-auto p-6 space-y-4">
+      <div class="flex items-center justify-between gap-2 flex-wrap">
         <div>
-          <h3 class="text-lg font-bold font-display-theme">🗓️ 주간 수업 시간표 &amp; 교시 시간 편집</h3>
-          <p class="text-xs text-[var(--text-muted)]">교시별 시작·종료 시각을 직접 편집할 수 있고, 각 요일·교시 칸을 눌러 과목·학급을 등록할 수 있습니다.</p>
+          <h3 class="text-lg font-bold font-display-theme">🗓️ 주간 수업 시간표 등록 (월~금)</h3>
+          <p class="text-xs text-[var(--text-muted)]">각 교시 칸에서 시작·종료 시각을 바로 설정할 수 있고, 요일 칸을 눌러 과목·학급을 등록할 수 있습니다.</p>
         </div>
-        <button onclick="closeTimetableModal()" class="px-3 py-1.5 rounded-xl text-xs font-bold theme-subtle">닫기 ✕</button>
-      </div>
-
-      <!-- 교시 시간 편집 영역 -->
-      <div class="p-4 rounded-2xl theme-subtle space-y-3">
-        <div class="flex items-center justify-between flex-wrap gap-2">
-          <div class="text-xs font-bold">⏰ 교시별 시간 설정 (변경 즉시 시간표와 오늘 흐름에 반영)</div>
-          <button onclick="resetPeriodTimes()" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white border border-[var(--border-soft)]">
-            기본 시간 복원
+        <div class="flex items-center gap-2">
+          <button onclick="resetPeriodTimes()" class="px-3 py-1.5 rounded-xl text-xs font-bold theme-subtle hover:border-[var(--accent)]">
+            기본 교시시간 복원
           </button>
+          <button onclick="closeTimetableModal()" class="px-3 py-1.5 rounded-xl text-xs font-bold theme-subtle">닫기 ✕</button>
         </div>
-        <div id="periodTimeEditorGrid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2"></div>
       </div>
 
-      <!-- 월~금 시간표 그리드 -->
       <div class="overflow-x-auto">
-        <table class="w-full border-collapse text-xs min-w-[660px]">
+        <table class="w-full border-collapse text-xs min-w-[680px]">
           <thead>
             <tr class="theme-subtle text-left">
-              <th class="p-2.5 border border-[var(--border-soft)] w-28">교시 시간</th>
+              <th class="p-2.5 border border-[var(--border-soft)] w-36">교시 · 시간 설정</th>
               <th class="p-2.5 border border-[var(--border-soft)]">월요일</th>
               <th class="p-2.5 border border-[var(--border-soft)]">화요일</th>
               <th class="p-2.5 border border-[var(--border-soft)]">수요일</th>
@@ -502,7 +495,7 @@
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
       window.__tfCloud = {
-        saveSettings: (payload) => setDoc(doc(db, "planner_settings", "teacherflow_v3"), payload, { merge: true }),
+        saveSettings: (payload) => setDoc(doc(db, "planner_settings", "teacherflow_v3_1"), payload, { merge: true }),
         saveDay: (dateStr, payload) => setDoc(doc(db, "planner_days", dateStr), payload, { merge: true })
       };
       syncText.textContent = "클라우드 동기화 · teacher-flow-fd09b";
@@ -530,8 +523,8 @@
       alarmLead: 10,
       periods: DEFAULT_PERIODS.map((p) => ({ ...p })),
       timetable: {},
-      classMemos: {}, // key: `${dayName}_${period}` -> 메모 문자열
-      scheduledDuties: [], // { id, date, type, start, end, note }
+      classMemos: {},
+      scheduledDuties: [],
       days: {}
     };
     let chosenEmoji = "🌅";
@@ -558,11 +551,11 @@
     }
 
     function persist() {
-      localStorage.setItem("teacherflow_v3_state", JSON.stringify(state));
+      localStorage.setItem("teacherflow_v3_1_state", JSON.stringify(state));
       const dateStr = document.getElementById("selectedDate").value || todayISO();
       if (window.__tfCloud) {
         window.__tfCloud.saveSettings({
-          version: "3.0",
+          version: "3.1",
           theme: state.theme,
           alarmLead: state.alarmLead,
           periods: state.periods,
@@ -575,7 +568,7 @@
     }
 
     function loadSaved() {
-      const raw = localStorage.getItem("teacherflow_v3_state");
+      const raw = localStorage.getItem("teacherflow_v3_1_state") || localStorage.getItem("teacherflow_v3_state");
       if (raw) {
         try {
           const parsed = JSON.parse(raw);
@@ -654,7 +647,6 @@
       const cancelled = new Set(dayData.cancelledPeriods || []);
       const entries = [];
 
-      // 1. 해당 요일 고정 수업 시간표
       if (dayName) {
         state.periods.forEach((p) => {
           const cell = state.timetable[`${dayName}_${p.period}`];
@@ -678,7 +670,6 @@
         });
       }
 
-      // 2. 해당 일자에 미리 등록된 등교지도·급식지도
       getDutiesForDate(dateStr).forEach((du) => {
         const id = `sched_duty_${du.id}`;
         const emoji = du.type.includes("급식") ? "🍽️" : "🚩";
@@ -694,7 +685,6 @@
         });
       });
 
-      // 3. 당일 추가된 블록·할 일·지도
       (dayData.items || []).forEach((it) => {
         entries.push({
           ...it,
@@ -739,7 +729,7 @@
         container.innerHTML = `
           <div class="p-8 rounded-2xl theme-subtle text-center text-sm text-[var(--text-muted)]">
             <div class="text-2xl mb-1.5">🍃</div>
-            표시할 일정이 없습니다. 위 <strong>자주 쓰는 일과 블록</strong>을 누르거나 <strong>+ 일정 추가</strong> / <strong>시간표·교시시간 등록</strong>을 활용해 보세요.
+            표시할 일정이 없습니다. 위 <strong>자주 쓰는 일과 블록</strong>을 누르거나 <strong>+ 일정 추가</strong> / <strong>시간표 등록</strong>을 활용해 보세요.
           </div>
         `;
       } else {
@@ -812,7 +802,6 @@
         });
       }
 
-      // 진행률 계산
       const total = entries.length;
       const doneCnt = entries.filter((e) => e.done).length;
       const pct = total ? Math.round((doneCnt / total) * 100) : 0;
@@ -820,7 +809,6 @@
       document.getElementById("progressPercentText").textContent = `${pct}%`;
       document.getElementById("progressBarFill").style.width = `${pct}%`;
 
-      // 현재 / 다음 일정 브리핑
       const now = new Date();
       const nowMin = now.getHours() * 60 + now.getMinutes();
       const active = entries.find((e) => toMin(e.start) <= nowMin && nowMin < toMin(e.end));
@@ -965,9 +953,8 @@
       renderAll();
     }
 
-    // 시간표 및 교시별 시간 편집 모달
+    // 시간표 등록 모달 (교시 시간을 각 교시 칸 안에서 설정)
     function openTimetableModal() {
-      renderPeriodTimeEditor();
       renderTimetableModal();
       document.getElementById("timetableModal").classList.remove("hidden");
     }
@@ -976,26 +963,10 @@
       document.getElementById("timetableModal").classList.add("hidden");
     }
 
-    function renderPeriodTimeEditor() {
-      const grid = document.getElementById("periodTimeEditorGrid");
-      grid.innerHTML = state.periods
-        .map(
-          (p, idx) => `
-          <div class="p-2.5 rounded-xl bg-white border border-[var(--border-soft)] space-y-1.5">
-            <div class="text-xs font-bold text-center">${p.period}교시</div>
-            <input type="time" value="${p.start}" onchange="updatePeriodTime(${idx}, 'start', this.value)" class="w-full p-1 rounded border border-[var(--border-soft)] text-[11px]" />
-            <input type="time" value="${p.end}" onchange="updatePeriodTime(${idx}, 'end', this.value)" class="w-full p-1 rounded border border-[var(--border-soft)] text-[11px]" />
-          </div>
-        `
-        )
-        .join("");
-    }
-
     function updatePeriodTime(idx, field, val) {
       if (!val) return;
       state.periods[idx][field] = val;
       persist();
-      renderTimetableModal();
       renderAll();
     }
 
@@ -1003,7 +974,6 @@
       if (!confirm("교시별 시작·종료 시각을 기본값으로 되돌릴까요?")) return;
       state.periods = DEFAULT_PERIODS.map((p) => ({ ...p }));
       persist();
-      renderPeriodTimeEditor();
       renderTimetableModal();
       renderAll();
     }
@@ -1011,11 +981,14 @@
     function renderTimetableModal() {
       const tbody = document.getElementById("timetableModalBody");
       tbody.innerHTML = "";
-      state.periods.forEach((p) => {
+      state.periods.forEach((p, idx) => {
         const tr = document.createElement("tr");
-        let html = `<td class="p-2.5 border border-[var(--border-soft)] font-bold theme-subtle">
-          <div>${p.period}교시</div>
-          <div class="text-[11px] text-[var(--text-muted)] font-normal">${p.start}~${p.end}</div>
+        let html = `<td onclick="event.stopPropagation()" class="p-2 border border-[var(--border-soft)] font-bold theme-subtle align-middle">
+          <div class="text-xs mb-1.5">${p.period}교시</div>
+          <div class="space-y-1">
+            <input type="time" value="${p.start}" onchange="updatePeriodTime(${idx}, 'start', this.value)" title="${p.period}교시 시작 시각" class="w-full px-1.5 py-1 rounded-lg bg-white border border-[var(--border-soft)] text-[11px] font-normal" />
+            <input type="time" value="${p.end}" onchange="updatePeriodTime(${idx}, 'end', this.value)" title="${p.period}교시 종료 시각" class="w-full px-1.5 py-1 rounded-lg bg-white border border-[var(--border-soft)] text-[11px] font-normal" />
+          </div>
         </td>`;
         DAYS.forEach((d) => {
           const key = `${d}_${p.period}`;
@@ -1167,7 +1140,7 @@
       if ("Notification" in window && Notification.permission === "default") {
         Notification.requestPermission();
       }
-      showAlarm("🔔 TeacherFlow 3.0 미리 알림 테스트", `${state.alarmLead}분 전 알림 차임벨과 배너가 정상 작동합니다!`);
+      showAlarm("🔔 TeacherFlow 3.1 미리 알림 테스트", `${state.alarmLead}분 전 알림 차임벨과 배너가 정상 작동합니다!`);
     }
 
     function tickClockAndAlarms() {
@@ -1180,27 +1153,4 @@
       const tStr = todayISO();
       const nowMin = now.getHours() * 60 + now.getMinutes();
       buildDayEntries(tStr).forEach((item) => {
-        const trig = toMin(item.start) - Number(state.alarmLead || 0);
-        const key = `${tStr}_${item.id}_${trig}`;
-        if (nowMin === trig && !firedAlarms.has(key)) {
-          firedAlarms.add(key);
-          showAlarm(
-            `🔔 ${state.alarmLead > 0 ? state.alarmLead + "분 전 알림" : "정시 시작"}: ${item.title}`,
-            `${item.start} ~ ${item.end}`
-          );
-        }
-      });
-    }
-
-    // 초기화
-    loadSaved();
-    document.getElementById("selectedDate").value = todayISO();
-    updateAlarmLabel();
-    setTheme(state.theme || "paper");
-    renderAll();
-    tickClockAndAlarms();
-    setInterval(tickClockAndAlarms, 1000);
-    setInterval(renderAll, 30000);
-  </script>
-</body>
-</html>
+        const trig
