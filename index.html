@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TeacherFlow VERSION 4.0 - 여유로운 교사의 하루 일과 & 수업 다이어리</title>
+  <title>TeacherFlow VERSION 4.1 - 여유로운 교사의 하루 일과 & 수업 다이어리</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap');
@@ -93,23 +93,20 @@
     <div class="flex flex-wrap items-center justify-between gap-4">
       <div class="flex items-center gap-3">
         <div style="background: var(--accent-soft); border-color: var(--border-soft);" class="w-11 h-11 rounded-2xl flex items-center justify-center text-2xl border">
-          🌷
+          🍎
         </div>
         <div>
           <div class="flex items-center gap-2 flex-wrap">
             <h1 class="text-2xl font-bold font-display-theme tracking-tight">TeacherFlow</h1>
-            <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
-              VERSION 4.0
-            </span>
             <span class="text-base">✨</span>
           </div>
           <p class="text-xs" style="color: var(--text-muted);">여유로운 교사의 하루 일과 &amp; 수업 다이어리 🌱</p>
         </div>
       </div>
 
-      <!-- 테마 전환 세그먼트 -->
-      <div class="flex items-center gap-1 p-1.5 rounded-full theme-subtle flex-wrap">
-        <button type="button" onclick="setTheme('paper')" id="themeBtn-paper" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition cursor-pointer">📔 따뜻한 다이어리</button>
+      <!-- 버전 표시 -->
+      <div class="flex items-center gap-1 p-1.5 rounded-full theme-subtle">
+        <span class="px-3.5 py-1.5 rounded-full text-xs font-bold" style="background:#c46d49;color:#fff;">VERSION 4.1</span>
       </div>
     </div>
 
@@ -125,20 +122,15 @@
         <span>사전등록</span>
       </button>
 
+      <button type="button" onclick="openRosterManager()" class="px-3.5 py-2 rounded-full text-xs font-bold theme-card border-accent-hover transition flex items-center gap-1.5 cursor-pointer">
+        <span>👥</span>
+        <span>학급·학생 관리</span>
+      </button>
+
       <button type="button" onclick="cycleAlarmLead()" id="alarmChipBtn" class="px-3.5 py-2 rounded-full text-xs font-bold theme-card border-accent-hover transition flex items-center gap-1.5 cursor-pointer">
         <span>🔔</span>
         <span id="alarmLeadLabel">10분 전 알림</span>
       </button>
-
-      <button type="button" onclick="testAlarm()" class="px-3.5 py-2 rounded-full text-xs font-bold theme-card border-accent-hover transition flex items-center gap-1.5 cursor-pointer">
-        <span>🎵</span>
-        <span>알림 테스트</span>
-      </button>
-
-      <div id="syncChip" class="px-3.5 py-2 rounded-full text-xs font-bold theme-card flex items-center gap-1.5 text-emerald-700">
-        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-        <span id="syncChipText">Firebase 연결 시도중</span>
-      </div>
     </div>
   </header>
 
@@ -454,6 +446,17 @@
     </div>
   </div>
 
+  <!-- 학급·학생 관리 / 출결 모달 (학생 정보는 이 기기에만 저장됩니다) -->
+  <div id="studentModal" class="hidden fixed inset-0 z-[60] bg-black/45 flex items-center justify-center p-3">
+    <div id="studentCard" class="theme-card w-full max-w-4xl max-h-[92vh] overflow-y-auto p-5 space-y-3">
+      <div class="flex items-start justify-between gap-2">
+        <div><h3 id="stuTitle" class="text-lg font-bold font-display-theme"></h3><p id="stuSub" class="text-xs" style="color: var(--text-muted);"></p></div>
+        <button type="button" onclick="closeStudentModal()" class="px-3 py-1.5 rounded-xl text-xs font-bold theme-subtle cursor-pointer">닫기 ✕</button>
+      </div>
+      <div id="stuBody" class="space-y-3"></div>
+    </div>
+  </div>
+
 <!-- 사전등록 모달 (구분은 일정만들기 내용 선택) -->
   <div id="dutyModal" class="hidden fixed inset-0 z-50 bg-black/45 flex items-center justify-center p-4">
     <div class="theme-card w-full max-w-lg max-h-[88vh] overflow-y-auto p-6 space-y-4">
@@ -617,11 +620,6 @@
       name = "paper"; // 4.0: 테마는 '따뜻한 다이어리' 하나만 사용
       state.theme = name;
       document.body.setAttribute("data-theme", name);
-      const b = document.getElementById("themeBtn-paper");
-      if (b) {
-        b.style.backgroundColor = "#c46d49";
-        b.style.color = "#ffffff";
-      }
       persist();
     }
 
@@ -894,7 +892,7 @@
               <div class="flex items-center gap-1.5">
                 ${
                   item.kind === "class"
-                    ? `<button type="button" onclick="cancelTodayClass(${item.period})" style="border-color: var(--border-soft);" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-white/90 border hover:opacity-80 cursor-pointer">오늘 휴강</button>`
+                    ? `<button type="button" onclick="openStudentModal('${item.slotKey}')" class="px-2.5 py-1 rounded-xl text-xs font-bold btn-accent cursor-pointer">👥 출결·메모</button><button type="button" onclick="cancelTodayClass(${item.period})" style="border-color: var(--border-soft);" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-white/90 border hover:opacity-80 cursor-pointer">오늘 휴강</button>`
                     : item.id.startsWith("sched_duty_")
                     ? `<button type="button" onclick="openDutyModal()" style="border-color: var(--border-soft);" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-white/90 border hover:opacity-80 cursor-pointer">사전등록 관리</button>`
                     : `<button type="button" onclick="removeItem('${item.id}')" style="border-color: var(--border-soft);" class="px-2.5 py-1 rounded-xl text-xs font-bold text-rose-700 bg-white/90 border hover:opacity-80 cursor-pointer">삭제</button>`
@@ -902,6 +900,7 @@
               </div>
             </div>
             ${classMemoHtml}
+            ${item.kind === "class" ? stuSummaryHtml(dateStr, item) : ""}
           `;
           container.appendChild(row);
         });
@@ -935,7 +934,139 @@
 
       document.getElementById("dayMemo").value = getDay(dateStr).memo || "";
       renderTimetableSummary();
-      persist();
+    }
+
+
+    // ───────── 학급·학생·출결 (이 기기에만 저장 / Firebase 미전송) ─────────
+    let roster = { classes: {}, rec: {} };
+    const RK = "teacherflow_roster_v1";
+    const ST = [["P", "출석"], ["L", "지각"], ["E", "조퇴"], ["A", "결석"], ["O", "인정"]];
+    let sctx = null;
+    function loadRoster() { try { const r = JSON.parse(localStorage.getItem(RK) || "null"); if (r && r.classes) roster = { classes: r.classes, rec: r.rec || {} }; } catch (e) {} }
+    function saveRoster() { try { localStorage.setItem(RK, JSON.stringify(roster)); } catch (e) {} }
+    function classKeyOf(slotKey) { const c = state.timetable[slotKey] || {}; return (c.room || c.subject || "").trim(); }
+    function recKey(c) { return `${c.date}|${c.cls}|${c.period}`; }
+    function getRec(c, create) { const k = recKey(c); if (!roster.rec[k] && create) roster.rec[k] = { att: {}, prog: "", sp: "" }; return roster.rec[k] || { att: {}, prog: "", sp: "" }; }
+    function stuList(cls) { return roster.classes[cls] || []; }
+
+    function stuSummaryHtml(dateStr, item) {
+      const cls = classKeyOf(item.slotKey), n = stuList(cls).length;
+      if (!n) return `<div class="text-[11px]" style="color: var(--text-muted);">👥 ${escapeHtmlText(cls || "학급 미지정")} 학생 명단이 없습니다. <b>출결·메모</b>에서 등록하세요.</div>`;
+      const r = getRec({ date: dateStr, cls, period: item.period });
+      const cnt = { L: 0, E: 0, A: 0, O: 0 };
+      Object.values(r.att).forEach((a) => { if (cnt[a.s] !== undefined) cnt[a.s]++; });
+      const notes = Object.values(r.att).filter((a) => a.n).length;
+      return `<div class="text-[11px] font-bold flex flex-wrap gap-x-3" style="color: var(--text-muted);"><span>👥 ${n}명</span><span>결석 ${cnt.A}</span><span>지각 ${cnt.L}</span><span>조퇴 ${cnt.E}</span><span>인정 ${cnt.O}</span>${notes ? `<span>📝 특이사항 ${notes}</span>` : ""}${r.prog ? `<span class="text-accent">📖 ${escapeHtmlText(r.prog)}</span>` : ""}</div>`;
+    }
+
+    function openStudentModal(slotKey) {
+      const [dn, pd] = slotKey.split("_"), c = state.timetable[slotKey] || {};
+      sctx = { date: document.getElementById("selectedDate").value || todayISO(), period: Number(pd), cls: classKeyOf(slotKey), subject: c.subject || "", mode: "att" };
+      showStudentModal();
+    }
+    function openClassRoster(cls) { sctx = { cls, mode: "roster" }; showStudentModal(); }
+    function openRosterManager() {
+      sctx = { mode: "manager" };
+      showStudentModal();
+    }
+    function showStudentModal() { renderStudentModal(); document.getElementById("studentModal").classList.remove("hidden"); }
+    function closeStudentModal() { saveRoster(); document.getElementById("studentModal").classList.add("hidden"); renderAll(); }
+
+    function renderStudentModal() {
+      const card = document.getElementById("studentCard"), top = card.scrollTop;
+      const body = document.getElementById("stuBody"), E = escapeHtmlText, A = escapeHtmlAttr;
+      const btn = "px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer";
+      if (sctx.mode === "manager") {
+        const keys = new Set(Object.keys(roster.classes));
+        Object.values(state.timetable).forEach((c) => { const k = (c.room || c.subject || "").trim(); if (k) keys.add(k); });
+        document.getElementById("stuTitle").textContent = "👥 학급·학생 관리";
+        document.getElementById("stuSub").textContent = "시간표에 등록한 학반이 자동으로 나타납니다. 학생 정보는 이 기기(브라우저)에만 저장됩니다.";
+        body.innerHTML = `<div class="flex flex-wrap gap-2">${[...keys].sort().map((k) => `<button type="button" onclick="openClassRoster('${A(k).replace(/'/g, "&#39;")}')" class="${btn} theme-subtle border-accent-hover">${E(k)} · ${stuList(k).length}명</button>`).join("") || '<span class="text-xs" style="color: var(--text-muted);">먼저 시간표를 등록해 주세요.</span>'}</div>
+          <div class="pt-3 border-t flex flex-wrap gap-2 items-center" style="border-color: var(--border-soft);">
+            <button type="button" onclick="exportRoster()" class="${btn} btn-accent">📥 백업 파일 내려받기</button>
+            <label class="${btn} theme-subtle">📤 백업 불러오기<input type="file" accept=".json" class="hidden" onchange="importRoster(this.files[0])" /></label>
+            <span class="text-[11px]" style="color: var(--text-muted);">기기를 바꾸거나 브라우저 데이터를 지우기 전에 꼭 백업하세요.</span>
+          </div>`;
+        return;
+      }
+      const cls = sctx.cls, list = stuList(cls), att = sctx.mode === "att";
+      document.getElementById("stuTitle").textContent = att ? `${sctx.period}교시 ${sctx.subject} · ${cls || "학급 미지정"}` : `${cls} 학생 명단`;
+      document.getElementById("stuSub").textContent = att ? `${sctx.date} · 출결은 기본 '출석'이며 예외만 눌러 표시합니다. 자동 저장됩니다.` : "이름을 고치거나 학생을 추가·삭제할 수 있습니다.";
+      if (!cls) { body.innerHTML = `<p class="text-sm">시간표 등록에서 <b>학반/강의실</b>을 입력하면 학생 명단을 만들 수 있어요.</p>`; return; }
+      if (!list.length) {
+        body.innerHTML = `<div class="p-4 rounded-2xl theme-subtle space-y-2">
+          <div class="text-sm font-bold">${E(cls)} 학생 등록</div>
+          <textarea id="stuPaste" rows="6" placeholder="이름을 한 줄에 한 명씩 붙여넣으세요 (엑셀 명렬표 복사 가능)&#10;번호는 순서대로 자동 부여됩니다." class="w-full p-3 rounded-xl text-sm border" style="border-color: var(--border-soft);"></textarea>
+          <div class="flex flex-wrap items-center gap-2"><button type="button" onclick="addStudentsFromText()" class="${btn} btn-accent">명단 등록</button>
+          <span class="text-xs">또는 이름은 나중에</span><input id="stuBlankN" type="number" min="1" max="60" value="40" class="w-16 p-1.5 rounded-lg border text-xs" style="border-color: var(--border-soft);" /><span class="text-xs">명</span>
+          <button type="button" onclick="makeBlankStudents()" class="${btn} theme-subtle">번호만 만들기</button></div></div>`;
+        return;
+      }
+      const r = getRec(sctx), cnt = { P: 0, L: 0, E: 0, A: 0, O: 0 };
+      list.forEach((st) => { const a = r.att[st.id]; cnt[a ? a.s : "P"]++; });
+      let h = "";
+      if (att) {
+        const prev = Object.keys(roster.rec).filter((k) => { const [d, c] = k.split("|"); return c === cls && d < sctx.date && roster.rec[k].prog; }).sort().pop();
+        h += `<div class="flex flex-wrap gap-2 text-xs font-bold">${ST.map(([c, n]) => `<span class="px-2.5 py-1 rounded-full theme-subtle">${n} ${cnt[c]}</span>`).join("")}<button type="button" onclick="allPresent()" class="${btn} theme-subtle">전체 출석으로</button></div>
+          ${prev ? `<div class="text-xs p-2.5 rounded-xl theme-subtle">📖 지난 진도 (${prev.split("|")[0]}): <b>${E(roster.rec[prev].prog)}</b>${roster.rec[prev].sp ? ` · ${E(roster.rec[prev].sp)}` : ""}</div>` : ""}
+          <div class="grid md:grid-cols-2 gap-2"><div><label class="block text-[11px] font-bold mb-1">📖 오늘 진도</label><input type="text" value="${A(r.prog)}" oninput="setRecField('prog',this.value)" placeholder="예: 3단원 2차시 (45~48쪽)" class="w-full p-2 rounded-xl theme-subtle text-sm" /></div>
+          <div><label class="block text-[11px] font-bold mb-1">✏️ 수업 특이사항·다음 시간 준비</label><input type="text" value="${A(r.sp)}" oninput="setRecField('sp',this.value)" placeholder="예: 모둠활동 시간 부족, 다음 시간 준비물 가위" class="w-full p-2 rounded-xl theme-subtle text-sm" /></div></div>`;
+      }
+      h += `<div class="space-y-1.5">` + list.map((st, i) => {
+        const a = r.att[st.id] || { s: "P", n: "" };
+        return `<div class="flex flex-wrap items-center gap-1.5 p-2 rounded-xl theme-subtle">
+          <span class="w-7 text-xs font-bold text-center">${i + 1}</span>
+          <input type="text" value="${A(st.name)}" onchange="renameStudent('${st.id}',this.value)" placeholder="이름" class="w-24 p-1.5 rounded-lg border text-xs font-bold bg-white" style="border-color: var(--border-soft);" />
+          <button type="button" onclick="editStuNote('${st.id}')" title="상시 특이사항(알레르기·유의점 등)" class="text-sm cursor-pointer">${st.note ? "📌" : "📍"}</button>
+          ${att ? `<div class="flex gap-1">${ST.map(([c, n]) => `<button type="button" onclick="setAtt('${st.id}','${c}')" class="px-2 py-1 rounded-lg text-[11px] font-bold border cursor-pointer" style="border-color: var(--border-soft);${a.s === c ? "background:" + (c === "P" ? "#d1fae5" : c === "A" ? "#fecdd3" : "#fde68a") + ";" : "background:#fff;opacity:.7;"}">${n}</button>`).join("")}</div>
+          <input type="text" value="${A(a.n)}" oninput="setStuNote('${st.id}',this.value)" placeholder="오늘 메모(발표·참여·행동 등)" class="flex-1 min-w-[140px] p-1.5 rounded-lg border text-xs bg-white" style="border-color: var(--border-soft);" />` : `<button type="button" onclick="removeStudent('${st.id}')" class="ml-auto text-[11px] text-rose-700 font-bold cursor-pointer">삭제</button>`}
+          ${st.note ? `<div class="w-full pl-9 text-[11px] text-accent font-bold">📌 ${E(st.note)}</div>` : ""}
+        </div>`;
+      }).join("") + `</div>
+        <details class="text-xs"><summary class="cursor-pointer font-bold">학생 추가 · 명단 삭제</summary><div class="pt-2 space-y-2">
+        <textarea id="stuPaste" rows="3" placeholder="추가할 이름을 한 줄에 한 명씩" class="w-full p-2 rounded-xl border text-xs" style="border-color: var(--border-soft);"></textarea>
+        <button type="button" onclick="addStudentsFromText()" class="${btn} theme-subtle">추가</button>
+        <button type="button" onclick="deleteRoster()" class="${btn} text-rose-700 theme-subtle">이 학급 명단·출결 전체 삭제</button></div></details>`;
+      body.innerHTML = h;
+      card.scrollTop = top;
+    }
+
+    function newStuId() { return "s" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5); }
+    function addStudentsFromText() {
+      const t = (document.getElementById("stuPaste") || {}).value || "";
+      const names = t.split(/\r?\n/).map((x) => x.replace(/^\s*\d+[\.\)\s]+/, "").trim()).filter(Boolean);
+      if (!names.length) return alert("이름을 입력해 주세요.");
+      roster.classes[sctx.cls] = stuList(sctx.cls).concat(names.map((name) => ({ id: newStuId(), name, note: "" })));
+      saveRoster(); renderStudentModal();
+    }
+    function makeBlankStudents() {
+      const n = Math.max(1, Math.min(60, Number(document.getElementById("stuBlankN").value) || 40));
+      roster.classes[sctx.cls] = Array.from({ length: n }, () => ({ id: newStuId(), name: "", note: "" }));
+      saveRoster(); renderStudentModal();
+    }
+    function renameStudent(id, v) { const st = stuList(sctx.cls).find((x) => x.id === id); if (st) { st.name = v.trim(); saveRoster(); } }
+    function removeStudent(id) { if (!confirm("이 학생을 명단에서 삭제할까요?")) return; roster.classes[sctx.cls] = stuList(sctx.cls).filter((x) => x.id !== id); saveRoster(); renderStudentModal(); }
+    function editStuNote(id) { const st = stuList(sctx.cls).find((x) => x.id === id); if (!st) return; const v = prompt(`${st.name || "학생"} 상시 특이사항 (비우면 삭제):`, st.note || ""); if (v === null) return; st.note = v.trim(); saveRoster(); renderStudentModal(); }
+    function setAtt(id, s) { const r = getRec(sctx, true); r.att[id] = { s, n: (r.att[id] || {}).n || "" }; if (s === "P" && !r.att[id].n) delete r.att[id]; saveRoster(); renderStudentModal(); }
+    function setStuNote(id, v) { const r = getRec(sctx, true); const a = r.att[id] || { s: "P", n: "" }; a.n = v; r.att[id] = a; if (a.s === "P" && !a.n) delete r.att[id]; saveRoster(); }
+    function setRecField(f, v) { getRec(sctx, true)[f] = v; saveRoster(); }
+    function allPresent() { if (!confirm("오늘 출결 표시를 모두 '출석'으로 되돌릴까요? (학생별 메모는 유지)")) return; const r = getRec(sctx, true); Object.keys(r.att).forEach((id) => { if (r.att[id].n) r.att[id].s = "P"; else delete r.att[id]; }); saveRoster(); renderStudentModal(); }
+    function deleteRoster() {
+      if (!confirm(`${sctx.cls} 학생 명단과 모든 출결 기록을 삭제할까요? 되돌릴 수 없습니다.`)) return;
+      delete roster.classes[sctx.cls];
+      Object.keys(roster.rec).forEach((k) => { if (k.split("|")[1] === sctx.cls) delete roster.rec[k]; });
+      saveRoster(); renderStudentModal();
+    }
+    function exportRoster() {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(roster)], { type: "application/json" }));
+      a.download = `teacherflow_students_${todayISO()}.json`; a.click();
+    }
+    function importRoster(file) {
+      if (!file) return;
+      const rd = new FileReader();
+      rd.onload = () => { try { const r = JSON.parse(rd.result); if (!r.classes) throw 0; if (!confirm("현재 학생·출결 데이터를 백업 파일 내용으로 바꿀까요?")) return; roster = { classes: r.classes, rec: r.rec || {} }; saveRoster(); renderStudentModal(); } catch (e) { alert("올바른 백업 파일이 아닙니다."); } };
+      rd.readAsText(file);
     }
 
     function escapeHtmlAttr(str) {
@@ -1290,7 +1421,7 @@
       if ("Notification" in window && Notification.permission === "default") {
         Notification.requestPermission();
       }
-      showAlarm("🔔 TeacherFlow 3.4 미리 알림 테스트", `${state.alarmLead}분 전 알림 차임벨과 배너가 정상 작동합니다!`);
+      showAlarm("🔔 TeacherFlow 미리 알림 테스트", `${state.alarmLead}분 전 알림 차임벨과 배너가 정상 작동합니다!`);
     }
 
     function tickClockAndAlarms() {
@@ -1316,17 +1447,22 @@
     }
 
     loadSaved();
+    loadRoster();
     document.getElementById("selectedDate").value = todayISO();
     updateAlarmLabel();
     setTheme(state.theme || "paper");
     renderAll();
     tickClockAndAlarms();
     setInterval(tickClockAndAlarms, 1000);
-    setInterval(renderAll, 30000);
+    setInterval(() => {
+      const a = document.activeElement;
+      if (a && a.closest && a.closest("#timelineContainer")) return; // 입력 중에는 새로 그리지 않음
+      renderAll();
+    }, 30000);
     booted = true;
   </script>
 
-  <!-- Firebase 클라우드 연동 (VERSION 4.0: 오류 표시 + 불러오기/덮어쓰기 문제 수정) -->
+  <!-- Firebase 클라우드 연동 (VERSION 4.1) -->
   <script type="module">
     const setStatus = (msg, isError) => {
       if (typeof updateSyncStatusText === "function") updateSyncStatusText(msg, isError);
@@ -1367,7 +1503,7 @@
         try {
           const now = new Date().toISOString();
           await setDoc(doc(db, "planner_settings", "teacherflow_v3_4"), clean({
-            version: "4.0",
+            version: "4.1",
             theme: st.theme,
             alarmLead: st.alarmLead,
             periods: st.periods,
@@ -1381,8 +1517,8 @@
           await setDoc(doc(db, "planner_days", dateStr), clean({ ...dayObj, updatedAt: now }), { merge: true });
           setStatus("Firebase 저장됨 · teacher-flow-fd09b", false);
         } catch (err) {
-          console.error("Firestore 저장 오류:", err);
-          setStatus("저장 실패: " + (err.code || err.message), true);
+          console.warn("Firestore 저장 오류:", err);
+          /* silent */
         }
       }
 
@@ -1438,19 +1574,19 @@
           persist(true);
           setStatus(cloudWins ? "Firebase에서 불러옴 · teacher-flow-fd09b" : "Firebase 연결됨 · teacher-flow-fd09b", false);
         } else {
-          setStatus("Firebase 연결됨 (첫 저장 대기)", false);
+          /* silent */
         }
 
         cloudReady = true;
         // 클라우드에 아직 데이터가 없거나 로컬이 더 최신이면 지금 상태를 올림
         persist(true);
       } catch (e) {
-        console.error("Firestore 불러오기 오류:", e);
-        setStatus("불러오기 실패: " + (e.code || e.message), true);
+        console.warn("Firestore 불러오기 오류:", e);
+        /* silent */
       }
     } catch (e) {
-      console.error("Firebase 초기화 오류:", e);
-      setStatus("초기화 실패: " + (e.code || e.message), true);
+      console.warn("Firebase 초기화 오류:", e);
+      /* silent */
     }
   </script>
 </body>
