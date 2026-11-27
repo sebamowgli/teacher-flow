@@ -1323,7 +1323,7 @@
 
     try {
       const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js");
-      const { initializeFirestore, doc, setDoc, getDoc, getDocs, collection } =
+      const { initializeFirestore, getFirestore, doc, setDoc, getDoc, getDocs, collection } =
         await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js");
 
       const firebaseConfig = {
@@ -1336,7 +1336,13 @@
       };
 
       const app = initializeApp(firebaseConfig);
-      const db = initializeFirestore(app, { experimentalAutoDetectLongPolling: true });
+      let db;
+      try {
+        db = initializeFirestore(app, { experimentalAutoDetectLongPolling: true });
+      } catch (e1) {
+        console.warn("initializeFirestore 실패, getFirestore로 대체:", e1);
+        db = getFirestore(app);
+      }
 
       let cloudReady = false; // 처음 불러오기가 끝나기 전에는 클라우드에 저장하지 않음 (덮어쓰기 방지)
       let saveTimer = null;
