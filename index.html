@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TeacherFlow VERSION 4.1 - 여유로운 교사의 하루 일과 & 수업 다이어리</title>
+  <title>TeacherFlow VERSION 5.0 - 여유로운 교사의 하루 일과 & 수업 다이어리</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap');
@@ -106,7 +106,7 @@
 
       <!-- 버전 표시 -->
       <div class="flex items-center gap-1 p-1.5 rounded-full theme-subtle">
-        <span class="px-3.5 py-1.5 rounded-full text-xs font-bold" style="background:#c46d49;color:#fff;">VERSION 4.1</span>
+        <span class="px-3.5 py-1.5 rounded-full text-xs font-bold" style="background:#c46d49;color:#fff;">VERSION 5.0</span>
       </div>
     </div>
 
@@ -983,6 +983,10 @@
         document.getElementById("stuSub").textContent = "시간표에 등록한 학반이 자동으로 나타납니다. 학생 정보는 이 기기(브라우저)에만 저장됩니다.";
         body.innerHTML = `<div class="flex flex-wrap gap-2">${[...keys].sort().map((k) => `<button type="button" onclick="openClassRoster('${A(k).replace(/'/g, "&#39;")}')" class="${btn} theme-subtle border-accent-hover">${E(k)} · ${stuList(k).length}명</button>`).join("") || '<span class="text-xs" style="color: var(--text-muted);">먼저 시간표를 등록해 주세요.</span>'}</div>
           <div class="pt-3 border-t flex flex-wrap gap-2 items-center" style="border-color: var(--border-soft);">
+            <div class="w-full p-3 rounded-2xl theme-subtle space-y-1.5"><div class="text-xs font-bold">📊 엑셀로 전체 학급 명단 한 번에 등록</div>
+              <div class="text-[11px]" style="color: var(--text-muted);">열 제목을 <b>학반, 번호, 이름</b>으로 만들어 저장한 xlsx·csv 파일을 선택하세요. 여러 학반을 한 파일에 넣을 수 있어요.</div>
+              <div class="flex flex-wrap gap-2"><label class="${btn} btn-accent">📂 엑셀 파일 선택<input type="file" accept=".xlsx,.xls,.csv" class="hidden" onchange="importStudentsFile(this.files[0]);this.value=''" /></label>
+              <button type="button" onclick="downloadStudentTemplate()" class="${btn} theme-subtle">📄 양식 내려받기</button></div></div>
             <button type="button" onclick="exportRoster()" class="${btn} btn-accent">📥 백업 파일 내려받기</button>
             <label class="${btn} theme-subtle">📤 백업 불러오기<input type="file" accept=".json" class="hidden" onchange="importRoster(this.files[0])" /></label>
             <span class="text-[11px]" style="color: var(--text-muted);">기기를 바꾸거나 브라우저 데이터를 지우기 전에 꼭 백업하세요.</span>
@@ -996,6 +1000,8 @@
       if (!list.length) {
         body.innerHTML = `<div class="p-4 rounded-2xl theme-subtle space-y-2">
           <div class="text-sm font-bold">${E(cls)} 학생 등록</div>
+          <div class="flex flex-wrap items-center gap-2 p-2.5 rounded-xl bg-white/70"><label class="${btn} btn-accent">📊 엑셀로 한 번에 등록<input type="file" accept=".xlsx,.xls,.csv" class="hidden" onchange="importStudentsFile(this.files[0]);this.value=''" /></label>
+          <button type="button" onclick="downloadStudentTemplate()" class="${btn} theme-subtle">📄 양식 내려받기</button><span class="text-[11px]" style="color: var(--text-muted);">이름만 있는 한 열짜리 파일도 돼요</span></div>
           <textarea id="stuPaste" rows="6" placeholder="이름을 한 줄에 한 명씩 붙여넣으세요 (엑셀 명렬표 복사 가능)&#10;번호는 순서대로 자동 부여됩니다." class="w-full p-3 rounded-xl text-sm border" style="border-color: var(--border-soft);"></textarea>
           <div class="flex flex-wrap items-center gap-2"><button type="button" onclick="addStudentsFromText()" class="${btn} btn-accent">명단 등록</button>
           <span class="text-xs">또는 이름은 나중에</span><input id="stuBlankN" type="number" min="1" max="60" value="40" class="w-16 p-1.5 rounded-lg border text-xs" style="border-color: var(--border-soft);" /><span class="text-xs">명</span>
@@ -1024,11 +1030,90 @@
         </div>`;
       }).join("") + `</div>
         <details class="text-xs"><summary class="cursor-pointer font-bold">학생 추가 · 명단 삭제</summary><div class="pt-2 space-y-2">
+        <label class="${btn} btn-accent inline-block">📊 엑셀로 추가·갱신<input type="file" accept=".xlsx,.xls,.csv" class="hidden" onchange="importStudentsFile(this.files[0]);this.value=''" /></label>
         <textarea id="stuPaste" rows="3" placeholder="추가할 이름을 한 줄에 한 명씩" class="w-full p-2 rounded-xl border text-xs" style="border-color: var(--border-soft);"></textarea>
         <button type="button" onclick="addStudentsFromText()" class="${btn} theme-subtle">추가</button>
         <button type="button" onclick="deleteRoster()" class="${btn} text-rose-700 theme-subtle">이 학급 명단·출결 전체 삭제</button></div></details>`;
       body.innerHTML = h;
       card.scrollTop = top;
+    }
+
+
+    // ───────── 엑셀(xlsx/xls/csv) 학생 명단 일괄 등록 ─────────
+    function ensureXLSX() {
+      return new Promise((res, rej) => {
+        if (window.XLSX) return res();
+        const sc = document.createElement("script");
+        sc.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+        sc.onload = () => res();
+        sc.onerror = () => rej(new Error("load"));
+        document.head.appendChild(sc);
+      });
+    }
+    function downloadStudentTemplate() {
+      const csv = "\uFEFF학반,번호,이름\n2-3,1,홍길동\n2-3,2,김하늘\n2-4,1,이도윤\n";
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+      a.download = "학생명단_양식.csv"; a.click();
+    }
+    async function importStudentsFile(file) {
+      if (!file) return;
+      try {
+        await ensureXLSX();
+      } catch (e) {
+        return alert("엑셀 도구를 불러오지 못했어요(인터넷 연결 확인). 이름을 복사해서 붙여넣는 방법을 이용해 주세요.");
+      }
+      try {
+        const buf = await file.arrayBuffer();
+        let wb;
+        if (/\.csv$/i.test(file.name)) {
+          let txt = new TextDecoder("utf-8").decode(buf);
+          if (txt.includes("\uFFFD")) txt = new TextDecoder("euc-kr").decode(buf); // 엑셀 기본 CSV(한글 ANSI) 대응
+          wb = XLSX.read(txt, { type: "string" });
+        } else {
+          wb = XLSX.read(buf, { type: "array" });
+        }
+        const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, defval: "" })
+          .map((r) => r.map((c) => String(c).trim())).filter((r) => r.some(Boolean));
+        if (!rows.length) return alert("파일에 내용이 없어요.");
+        const hi = rows.findIndex((r) => r.some((c) => /^(이름|성명)$/.test(c)));
+        let iName, iCls = -1, iNo = -1, data;
+        if (hi >= 0) {
+          const h = rows[hi];
+          iName = h.findIndex((c) => /^(이름|성명)$/.test(c));
+          iCls = h.findIndex((c) => /^(학반|학급|반)$/.test(c));
+          iNo = h.findIndex((c) => /^(번호|출석번호)$/.test(c));
+          data = rows.slice(hi + 1);
+        } else {
+          data = rows;
+          if ((rows[0].length || 0) >= 2 && /^\d+$/.test(rows[0][0])) { iNo = 0; iName = 1; } else iName = 0;
+        }
+        const byCls = {};
+        data.forEach((r) => {
+          const name = (r[iName] || "").trim();
+          if (!name) return;
+          const cls = iCls >= 0 ? (r[iCls] || "").trim() : (sctx.mode === "manager" ? "" : sctx.cls);
+          if (!cls) return;
+          (byCls[cls] = byCls[cls] || []).push({ name, no: iNo >= 0 ? Number(r[iNo]) || 0 : 0 });
+        });
+        const keys = Object.keys(byCls);
+        if (!keys.length) return alert(sctx.mode === "manager" ? "'학반' 열을 찾지 못했어요. 양식 내려받기로 열 제목(학반, 번호, 이름)을 확인해 주세요." : "이름을 찾지 못했어요. 열 제목을 '이름'으로 해 주세요.");
+        let added = 0;
+        keys.forEach((cls) => {
+          const arr = byCls[cls];
+          if (arr.some((x) => x.no)) arr.sort((a, b) => (a.no || 999) - (b.no || 999));
+          const old = stuList(cls), used = new Set(), out = [];
+          arr.forEach((x) => {
+            const m = old.find((o) => o.name === x.name && !used.has(o.id));
+            if (m) { used.add(m.id); out.push(m); } else { out.push({ id: newStuId(), name: x.name, note: "" }); added++; }
+          });
+          roster.classes[cls] = out.concat(old.filter((o) => !used.has(o.id)));
+        });
+        saveRoster(); renderStudentModal();
+        alert(`${keys.length}개 학급 · 새로 ${added}명 등록했어요.\n(이미 있던 학생은 출결·특이사항을 그대로 유지했어요.)`);
+      } catch (e) {
+        alert("파일을 읽지 못했어요. xlsx 또는 csv 파일인지 확인해 주세요.");
+      }
     }
 
     function newStuId() { return "s" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5); }
@@ -1462,7 +1547,7 @@
     booted = true;
   </script>
 
-  <!-- Firebase 클라우드 연동 (VERSION 4.1) -->
+  <!-- Firebase 클라우드 연동 (VERSION 5.0) -->
   <script type="module">
     const setStatus = (msg, isError) => {
       if (typeof updateSyncStatusText === "function") updateSyncStatusText(msg, isError);
@@ -1503,7 +1588,7 @@
         try {
           const now = new Date().toISOString();
           await setDoc(doc(db, "planner_settings", "teacherflow_v3_4"), clean({
-            version: "4.1",
+            version: "5.0",
             theme: st.theme,
             alarmLead: st.alarmLead,
             periods: st.periods,
