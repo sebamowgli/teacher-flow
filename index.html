@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TeacherFlow VERSION 6.0 - 여유로운 교사의 하루 일과 & 수업 다이어리</title>
+  <title>TeacherFlow VERSION 6.1 - 여유로운 교사의 하루 일과 & 수업 다이어리</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap');
@@ -82,7 +82,7 @@
     <div class="w-full max-w-sm text-center space-y-4 p-8 rounded-3xl bg-white shadow-lg">
       <div class="text-5xl">🍎</div>
       <h1 class="text-xl font-bold">TeacherFlow</h1>
-      <p class="text-xs" style="color:#8a7b6a;">VERSION 6.0 · 로그인한 나만 볼 수 있어요</p>
+      <p class="text-xs" style="color:#8a7b6a;">VERSION 6.1 · 로그인한 나만 볼 수 있어요</p>
       <p id="gateMsg" class="text-sm">로그인 상태를 확인하는 중…</p>
       <div id="gateForm" class="hidden space-y-2 text-left">
         <input id="gateEmail" type="email" autocomplete="username" placeholder="이메일" class="w-full p-3 rounded-xl border text-sm" style="border-color:#e2d6c4;" onkeydown="if(event.key==='Enter')document.getElementById('gatePw').focus()" />
@@ -123,7 +123,7 @@
 
       <!-- 버전 표시 -->
       <div class="flex items-center gap-1 p-1.5 rounded-full theme-subtle">
-        <span class="px-3.5 py-1.5 rounded-full text-xs font-bold" style="background:#c46d49;color:#fff;">VERSION 6.0</span>
+        <span class="px-3.5 py-1.5 rounded-full text-xs font-bold" style="background:#c46d49;color:#fff;">VERSION 6.1</span>
       </div>
       <div id="authBox" class="flex items-center gap-1.5 text-xs"></div>
     </div>
@@ -132,7 +132,7 @@
     <div class="flex flex-wrap items-center gap-2 mt-4">
       <button type="button" onclick="openTimetableModal()" class="px-3.5 py-2 rounded-full text-xs font-bold theme-card border-accent-hover transition flex items-center gap-1.5 cursor-pointer">
         <span>🗓️</span>
-        <span>시간표 등록</span>
+        <span>시간표</span>
       </button>
 
       <button type="button" onclick="openDutyModal()" class="px-3.5 py-2 rounded-full text-xs font-bold theme-card border-accent-hover transition flex items-center gap-1.5 cursor-pointer">
@@ -249,7 +249,7 @@
             🚩 사전등록 →
           </button>
           <button type="button" onclick="openTimetableModal()" class="text-xs font-bold text-accent hover:underline cursor-pointer">
-            🗓️ 시간표 등록 →
+            🗓️ 시간표 →
           </button>
         </div>
       </div>
@@ -309,7 +309,7 @@
             <span>🗓️</span>
             <span>등록된 주간 시간표 요약</span>
           </h4>
-          <button type="button" onclick="openTimetableModal()" class="text-xs font-bold text-accent hover:underline cursor-pointer">시간표 등록</button>
+          <button type="button" onclick="openTimetableModal()" class="text-xs font-bold text-accent hover:underline cursor-pointer">시간표</button>
         </div>
         <div id="timetableSummaryBox" class="text-xs space-y-1.5" style="color: var(--text-muted);"></div>
       </div>
@@ -394,23 +394,18 @@
     </div>
   </div>
 
-  <!-- 시간표 등록 모달 (저장 버튼 포함) -->
+  <!-- 시간표 모달: 기본은 보기, ＋ 등록·수정을 누르면 편집 -->
   <div id="timetableModal" class="hidden fixed inset-0 z-50 bg-black/45 flex items-center justify-center p-2 sm:p-4">
     <div class="theme-card w-full max-w-5xl max-h-[94vh] overflow-y-auto p-3 sm:p-6 space-y-3 sm:space-y-4">
       <div class="flex items-center justify-between gap-2 flex-wrap">
         <div>
-          <h3 class="text-lg font-bold font-display-theme">🗓️ 주간 수업 시간표 등록</h3>
-          <p class="text-xs" style="color: var(--text-muted);">요일 칸을 눌러 과목·학반을 등록하세요. 같은 수업은 요일·교시를 여러 개 골라 한 번에 등록할 수 있어요. 등록 후 <strong>저장</strong>을 눌러주세요.</p>
+          <h3 id="ttTitle" class="text-lg font-bold font-display-theme">🗓️ 시간표</h3>
+          <p id="ttDesc" class="text-xs" style="color: var(--text-muted);"></p>
         </div>
-        <div class="flex items-center gap-2 flex-wrap">
-          <button type="button" onclick="saveTimetableModal()" class="px-4 py-1.5 rounded-xl text-xs font-bold btn-accent cursor-pointer">
-            💾 저장
-          </button>
-          <button type="button" onclick="closeTimetableModal()" class="px-3 py-1.5 rounded-xl text-xs font-bold theme-subtle cursor-pointer">닫기 ✕</button>
-        </div>
+        <div id="ttHeaderBtns" class="flex items-center gap-2 flex-wrap"></div>
       </div>
 
-      <details id="periodTimesDetails" class="rounded-xl theme-subtle p-2.5">
+      <details id="periodTimesDetails" class="hidden rounded-xl theme-subtle p-2.5">
         <summary class="text-xs font-bold cursor-pointer">⏱ 교시별 시작·종료 시각 설정</summary>
         <div id="periodTimesBox" class="grid sm:grid-cols-2 gap-1.5 pt-2"></div>
       </details>
@@ -418,23 +413,19 @@
       <div>
         <table class="w-full table-fixed border-collapse text-xs">
           <thead>
-            <tr class="theme-subtle text-left">
-              <th class="p-1 sm:p-2.5 border w-14 sm:w-32" style="border-color: var(--border-soft);">교시</th>
-              <th class="p-1 sm:p-2.5 border text-center sm:text-left" style="border-color: var(--border-soft);">월<span class="hidden sm:inline">요일</span></th>
-              <th class="p-1 sm:p-2.5 border text-center sm:text-left" style="border-color: var(--border-soft);">화<span class="hidden sm:inline">요일</span></th>
-              <th class="p-1 sm:p-2.5 border text-center sm:text-left" style="border-color: var(--border-soft);">수<span class="hidden sm:inline">요일</span></th>
-              <th class="p-1 sm:p-2.5 border text-center sm:text-left" style="border-color: var(--border-soft);">목<span class="hidden sm:inline">요일</span></th>
-              <th class="p-1 sm:p-2.5 border text-center sm:text-left" style="border-color: var(--border-soft);">금<span class="hidden sm:inline">요일</span></th>
+            <tr class="theme-subtle text-center">
+              <th class="p-1 sm:p-2.5 border w-14 sm:w-28" style="border-color: var(--border-soft);">교시</th>
+              <th class="p-1 sm:p-2.5 border" style="border-color: var(--border-soft);">월<span class="hidden sm:inline">요일</span></th>
+              <th class="p-1 sm:p-2.5 border" style="border-color: var(--border-soft);">화<span class="hidden sm:inline">요일</span></th>
+              <th class="p-1 sm:p-2.5 border" style="border-color: var(--border-soft);">수<span class="hidden sm:inline">요일</span></th>
+              <th class="p-1 sm:p-2.5 border" style="border-color: var(--border-soft);">목<span class="hidden sm:inline">요일</span></th>
+              <th class="p-1 sm:p-2.5 border" style="border-color: var(--border-soft);">금<span class="hidden sm:inline">요일</span></th>
             </tr>
           </thead>
           <tbody id="timetableModalBody"></tbody>
         </table>
       </div>
-
-      <div class="flex justify-end gap-2 pt-2">
-        <button type="button" onclick="closeTimetableModal()" class="px-4 py-2 rounded-xl text-xs font-bold theme-subtle cursor-pointer">취소</button>
-        <button type="button" onclick="saveTimetableModal()" class="px-5 py-2 rounded-xl text-xs font-bold btn-accent cursor-pointer">💾 저장</button>
-      </div>
+      <div id="ttEmpty" class="hidden text-center text-sm py-4" style="color: var(--text-muted);">등록된 시간표가 없어요. 위의 <b>＋ 등록·수정</b> 버튼으로 등록해 보세요.</div>
     </div>
   </div>
 
@@ -858,7 +849,7 @@
         container.innerHTML = `
           <div style="color: var(--text-muted);" class="p-8 rounded-2xl theme-subtle text-center text-sm">
             <div class="text-2xl mb-1.5">🍃</div>
-            표시할 일정이 없습니다. 위 <strong>자주 쓰는 일과 블록</strong>을 누르거나 <strong>+ 일정 추가</strong> / <strong>시간표 등록</strong>을 활용해 보세요.
+            표시할 일정이 없습니다. 위 <strong>자주 쓰는 일과 블록</strong>을 누르거나 <strong>+ 일정 추가</strong> / <strong>시간표</strong>을 활용해 보세요.
           </div>
         `;
       } else {
@@ -1113,7 +1104,7 @@
       const cls = sctx.cls, list = stuList(cls), att = sctx.mode === "att";
       document.getElementById("stuTitle").textContent = att ? (sctx.period === 0 ? `📅 일일 출결(담임) · ${cls || "학급 미지정"}` : `${sctx.period}교시 ${sctx.subject} · ${cls || "학급 미지정"}`) : `${cls} 학생 명단`;
       document.getElementById("stuSub").textContent = att ? `${sctx.date} · 출결은 기본 '출석'이며 예외만 눌러 표시합니다. 자동 저장됩니다.` : "이름을 고치거나 학생을 추가·삭제할 수 있습니다.";
-      if (!cls) { body.innerHTML = `<p class="text-sm">시간표 등록에서 <b>학반/강의실</b>을 입력하면 학생 명단을 만들 수 있어요.</p>`; return; }
+      if (!cls) { body.innerHTML = `<p class="text-sm">시간표에서 <b>학반/강의실</b>을 입력하면 학생 명단을 만들 수 있어요.</p>`; return; }
       if (!list.length) {
         body.innerHTML = `<div class="p-4 rounded-2xl theme-subtle space-y-2">
           <div class="text-sm font-bold">${E(cls)} 학생 등록</div>
@@ -1291,9 +1282,11 @@
       box.innerHTML = DAYS.map((d) => {
         const list = state.periods.map((p) => {
           const c = state.timetable[`${d}_${p.period}`];
-          return c && c.subject ? `${p.period}교시 ${escapeHtmlText(c.subject)}${c.room ? `(${escapeHtmlText(c.room)})` : ""}` : null;
+          return c && c.subject
+            ? `<span class="inline-block px-2 py-1 m-0.5 rounded-lg theme-subtle"><span class="font-bold">${p.period}</span> ${escapeHtmlText(c.subject)}${c.room ? ` <b class="text-accent text-sm">${escapeHtmlText(c.room)}</b>` : ""}</span>`
+            : null;
         }).filter(Boolean);
-        return `<div><strong style="color: var(--text-main);">${d}요일:</strong> ${list.length ? list.join(" · ") : "등록된 수업 없음"}</div>`;
+        return `<div class="text-center"><strong style="color: var(--text-main);">${d}요일</strong><div>${list.length ? list.join("") : "등록된 수업 없음"}</div></div>`;
       }).join("");
     }
 
@@ -1380,10 +1373,13 @@
       renderAll();
     }
 
+    let ttEdit = false;
     function openTimetableModal() {
+      ttEdit = false;
       renderTimetableModal();
       document.getElementById("timetableModal").classList.remove("hidden");
     }
+    function setTtEdit(on) { ttEdit = on; renderTimetableModal(); }
 
     function closeTimetableModal() {
       document.getElementById("timetableModal").classList.add("hidden");
@@ -1391,9 +1387,8 @@
 
     function saveTimetableModal() {
       persist();
-      closeTimetableModal();
       renderAll();
-      alert("시간표가 저장되었습니다.");
+      setTtEdit(false);
     }
 
     function updatePeriodTime(idx, field, val) {
@@ -1406,8 +1401,18 @@
 
 
     function renderTimetableModal(skipPanel) {
-      const E = escapeHtmlText;
-      if (!skipPanel) {
+      const E = escapeHtmlText, btn = "px-4 py-1.5 rounded-xl text-xs font-bold cursor-pointer";
+      const filled = Object.keys(state.timetable).some((k) => state.timetable[k] && state.timetable[k].subject);
+      document.getElementById("ttTitle").textContent = ttEdit ? "✏️ 시간표 등록·수정" : "🗓️ 시간표";
+      document.getElementById("ttDesc").textContent = ttEdit ? "시간 칸을 눌러 과목·학반을 등록하세요. 요일·교시를 여러 개 골라 한 번에 등록할 수 있어요." : "내가 수업에 들어가는 학반과 과목이에요.";
+      document.getElementById("ttHeaderBtns").innerHTML = ttEdit
+        ? `<button type="button" onclick="saveTimetableModal()" class="${btn} btn-accent">💾 저장</button><button type="button" onclick="setTtEdit(false)" class="${btn} theme-subtle">← 시간표 보기</button><button type="button" onclick="closeTimetableModal()" class="${btn} theme-subtle">닫기 ✕</button>`
+        : `<button type="button" onclick="setTtEdit(true)" class="${btn} btn-accent text-sm">＋ 등록·수정</button><button type="button" onclick="closeTimetableModal()" class="${btn} theme-subtle">닫기 ✕</button>`;
+      const det = document.getElementById("periodTimesDetails");
+      det.classList.toggle("hidden", !ttEdit);
+      if (ttEdit && !skipPanel) det.open = true;
+      document.getElementById("ttEmpty").classList.toggle("hidden", ttEdit || filled);
+      if (ttEdit && !skipPanel) {
         document.getElementById("periodTimesBox").innerHTML = state.periods.map((p, idx) => `
           <div class="flex items-center gap-1.5 text-xs">
             <span class="w-12 font-bold">${p.period}교시</span>
@@ -1418,18 +1423,18 @@
       }
       document.getElementById("timetableModalBody").innerHTML = state.periods.map((p) => {
         let html = `<tr><td style="border-color: var(--border-soft);" class="p-1 sm:p-2 border theme-subtle align-middle text-center">
-          <div class="text-xs font-bold">${p.period}<span class="hidden sm:inline">교시</span></div>
+          <div class="text-xs sm:text-sm font-bold">${p.period}<span class="hidden sm:inline">교시</span></div>
           <div class="text-[9px] sm:text-[11px] leading-tight font-normal" style="color: var(--text-muted);">${p.start}<br>${p.end}</div>
         </td>`;
         DAYS.forEach((d) => {
-          const key = `${d}_${p.period}`, cell = state.timetable[key], memo = state.classMemos[key] || "";
-          html += `<td onclick="editTimetableSlot('${d}', ${p.period})" style="border-color: var(--border-soft);" class="p-1 sm:p-2.5 border cursor-pointer hover:bg-amber-50/70 transition align-top overflow-hidden h-14 sm:h-auto">
-            ${cell && cell.subject
-              ? `<div class="font-bold text-[11px] sm:text-sm leading-tight break-words">${E(cell.subject)}</div>
-                 <div style="color: var(--text-muted);" class="text-[10px] sm:text-[11px] leading-tight break-words">${E(cell.room || "")}</div>
-                 ${memo ? `<div class="hidden sm:block text-[11px] text-accent mt-1 truncate">✏️ ${E(memo)}</div>` : ""}`
-              : `<div style="color: var(--text-muted);" class="text-xs text-center pt-2 sm:pt-0"><span class="sm:hidden">＋</span><span class="hidden sm:inline">+ 시간표 등록</span></div>`}
-          </td>`;
+          const key = `${d}_${p.period}`, cell = state.timetable[key], has = cell && cell.subject;
+          const memo = state.classMemos[key] || "";
+          const content = has
+            ? `<div class="font-extrabold text-sm sm:text-xl leading-tight break-words text-accent">${E(cell.room || cell.subject)}</div>
+               ${cell.room ? `<div class="text-[10px] sm:text-sm font-bold leading-tight break-words">${E(cell.subject)}</div>` : ""}
+               ${ttEdit && memo ? `<div class="hidden sm:block text-[11px] text-accent mt-1 truncate">✏️ ${E(memo)}</div>` : ""}`
+            : (ttEdit ? `<div style="color: var(--text-muted);" class="text-xs pt-1 sm:pt-0"><span class="sm:hidden">＋</span><span class="hidden sm:inline">+ 등록</span></div>` : "");
+          html += `<td ${ttEdit ? `onclick="editTimetableSlot('${d}', ${p.period})"` : ""} style="border-color: var(--border-soft);${has ? " background: rgba(196,109,73,.09);" : ""}" class="p-1 sm:p-2.5 border text-center align-middle overflow-hidden h-14 sm:h-16 ${ttEdit ? "cursor-pointer hover:bg-amber-50/70 transition" : ""}">${content}</td>`;
         });
         return html + "</tr>";
       }).join("");
@@ -1669,7 +1674,7 @@
     booted = true;
   </script>
 
-  <!-- Firebase 로그인 + 클라우드 동기화 (VERSION 6.0) : 데이터는 users/{내 uid}/ 아래에만 저장 -->
+  <!-- Firebase 로그인 + 클라우드 동기화 (VERSION 6.1) : 데이터는 users/{내 uid}/ 아래에만 저장 -->
   <script type="module">
     const clean = (o) => JSON.parse(JSON.stringify(o));
     const gateReady = (ok, msg) => window.__gate && window.__gate.ready(ok, msg);
@@ -1714,7 +1719,7 @@
         const { st, dateStr, dayObj } = latest; latest = null;
         try {
           const now = new Date().toISOString();
-          await setDoc(U("planner", "settings"), clean({ version: "6.0", theme: st.theme, alarmLead: st.alarmLead, periods: st.periods, routineBlocks: st.routineBlocks, timetable: st.timetable, classMemos: st.classMemos, scheduledDuties: st.scheduledDuties, stateUpdatedAt: st.updatedAt || now, updatedAt: now }), { merge: true });
+          await setDoc(U("planner", "settings"), clean({ version: "6.1", theme: st.theme, alarmLead: st.alarmLead, periods: st.periods, routineBlocks: st.routineBlocks, timetable: st.timetable, classMemos: st.classMemos, scheduledDuties: st.scheduledDuties, stateUpdatedAt: st.updatedAt || now, updatedAt: now }), { merge: true });
           await setDoc(U("days", dateStr), clean({ ...dayObj, updatedAt: now }), { merge: true });
         } catch (err) { console.warn("저장 오류:", err); }
       }
