@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TeacherFlow VERSION 6.1 - 여유로운 교사의 하루 일과 & 수업 다이어리</title>
+  <title>TeacherFlow VERSION 6.2 - 여유로운 교사의 하루 일과 & 수업 다이어리</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap');
@@ -82,7 +82,7 @@
     <div class="w-full max-w-sm text-center space-y-4 p-8 rounded-3xl bg-white shadow-lg">
       <div class="text-5xl">🍎</div>
       <h1 class="text-xl font-bold">TeacherFlow</h1>
-      <p class="text-xs" style="color:#8a7b6a;">VERSION 6.1 · 로그인한 나만 볼 수 있어요</p>
+      <p class="text-xs" style="color:#8a7b6a;">VERSION 6.2 · 로그인한 나만 볼 수 있어요</p>
       <p id="gateMsg" class="text-sm">로그인 상태를 확인하는 중…</p>
       <div id="gateForm" class="hidden space-y-2 text-left">
         <input id="gateEmail" type="email" autocomplete="username" placeholder="이메일" class="w-full p-3 rounded-xl border text-sm" style="border-color:#e2d6c4;" onkeydown="if(event.key==='Enter')document.getElementById('gatePw').focus()" />
@@ -123,7 +123,7 @@
 
       <!-- 버전 표시 -->
       <div class="flex items-center gap-1 p-1.5 rounded-full theme-subtle">
-        <span class="px-3.5 py-1.5 rounded-full text-xs font-bold" style="background:#c46d49;color:#fff;">VERSION 6.1</span>
+        <span class="px-3.5 py-1.5 rounded-full text-xs font-bold" style="background:#c46d49;color:#fff;">VERSION 6.2</span>
       </div>
       <div id="authBox" class="flex items-center gap-1.5 text-xs"></div>
     </div>
@@ -446,16 +446,13 @@
           <input id="slotRoomInput" type="text" placeholder="예: 2-3, 미술실" onkeydown="if(event.key==='Enter')saveSlotModal()" class="w-full p-2.5 rounded-xl theme-subtle text-sm" />
         </div>
         <div>
-          <label class="block text-xs font-bold mb-1">적용할 요일</label>
-          <div id="slotDaysBox" class="flex flex-wrap gap-1.5"></div>
-        </div>
-        <div>
-          <label class="block text-xs font-bold mb-1">적용할 교시 <span class="font-normal" style="color: var(--text-muted);">(여러 개 고르면 한 번에 등록)</span></label>
-          <div id="slotPeriodsBox" class="flex flex-wrap gap-1.5"></div>
+          <label class="block text-xs font-bold mb-1">요일별 교시 선택 <span class="font-normal" style="color: var(--text-muted);">(눌러서 선택·해제)</span></label>
+          <div id="slotGrid" class="space-y-1.5"></div>
+          <p class="text-[10px] mt-1.5" style="color: var(--text-muted);">점선 칸은 다른 수업이 이미 있는 교시예요. 선택하면 덮어써요.</p>
         </div>
       </div>
       <div class="flex items-center justify-between gap-2 pt-1">
-        <button type="button" id="slotDeleteBtn" onclick="deleteSlotFromModal()" class="hidden px-3 py-2 rounded-xl text-xs font-bold theme-subtle cursor-pointer">🗑️ 이 칸 삭제</button>
+        <button type="button" id="slotDeleteBtn" onclick="deleteSlotFromModal()" class="hidden px-3 py-2 rounded-xl text-xs font-bold theme-subtle cursor-pointer">🗑️ 이 수업 삭제</button>
         <div class="flex gap-2 ml-auto">
           <button type="button" onclick="closeSlotModal()" class="px-4 py-2 rounded-xl text-xs font-bold theme-subtle cursor-pointer">취소</button>
           <button type="button" onclick="saveSlotModal()" class="px-5 py-2 rounded-xl text-xs font-bold btn-accent cursor-pointer">등록</button>
@@ -1404,9 +1401,9 @@
       const E = escapeHtmlText, btn = "px-4 py-1.5 rounded-xl text-xs font-bold cursor-pointer";
       const filled = Object.keys(state.timetable).some((k) => state.timetable[k] && state.timetable[k].subject);
       document.getElementById("ttTitle").textContent = ttEdit ? "✏️ 시간표 등록·수정" : "🗓️ 시간표";
-      document.getElementById("ttDesc").textContent = ttEdit ? "시간 칸을 눌러 과목·학반을 등록하세요. 요일·교시를 여러 개 골라 한 번에 등록할 수 있어요." : "내가 수업에 들어가는 학반과 과목이에요.";
+      document.getElementById("ttDesc").textContent = ttEdit ? "＋ 수업 추가를 누르거나 시간표 칸을 눌러, 과목·학반을 입력하고 요일 옆에서 1~7교시를 선택하세요." : "내가 수업에 들어가는 학반과 과목이에요.";
       document.getElementById("ttHeaderBtns").innerHTML = ttEdit
-        ? `<button type="button" onclick="saveTimetableModal()" class="${btn} btn-accent">💾 저장</button><button type="button" onclick="setTtEdit(false)" class="${btn} theme-subtle">← 시간표 보기</button><button type="button" onclick="closeTimetableModal()" class="${btn} theme-subtle">닫기 ✕</button>`
+        ? `<button type="button" onclick="openNewClass()" class="${btn} btn-accent">＋ 수업 추가</button><button type="button" onclick="saveTimetableModal()" class="${btn} theme-subtle">💾 저장</button><button type="button" onclick="setTtEdit(false)" class="${btn} theme-subtle">← 시간표 보기</button><button type="button" onclick="closeTimetableModal()" class="${btn} theme-subtle">닫기 ✕</button>`
         : `<button type="button" onclick="setTtEdit(true)" class="${btn} btn-accent text-sm">＋ 등록·수정</button><button type="button" onclick="closeTimetableModal()" class="${btn} theme-subtle">닫기 ✕</button>`;
       const det = document.getElementById("periodTimesDetails");
       det.classList.toggle("hidden", !ttEdit);
@@ -1440,55 +1437,71 @@
       }).join("");
     }
 
-    let slotEditing = { day: "", period: 0 };
+    let slotEditing = { day: "월", period: 1 };
+    let slotOrig = null; // 수정 중인 수업의 원래 (과목, 학반)
+    const sameClass = (c, o) => c && o && c.subject === o.subject && (c.room || "") === (o.room || "");
 
-    function editTimetableSlot(day, period) {
-      slotEditing = { day, period };
-      const key = `${day}_${period}`;
-      const cur = state.timetable[key] || { subject: "", room: "" };
-      document.getElementById("slotModalTitle").textContent = `${day}요일 ${period}교시 등록`;
-      document.getElementById("slotSubjectInput").value = cur.subject || "";
-      document.getElementById("slotRoomInput").value = cur.room || "";
-      document.getElementById("slotDeleteBtn").classList.toggle("hidden", !cur.subject);
-      // 같은 과목·학반을 여러 요일 × 여러 교시에 한 번에 등록
-      const pill = "inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full theme-subtle text-xs font-bold cursor-pointer";
-      document.getElementById("slotDaysBox").innerHTML = DAYS.map((d) => `
-        <label class="${pill}"><input type="checkbox" class="slotDayCheck" value="${d}" ${d === day ? "checked" : ""} />${d}</label>`).join("");
-      document.getElementById("slotPeriodsBox").innerHTML = state.periods.map((p) => `
-        <label class="${pill}"><input type="checkbox" class="slotPeriodCheck" value="${p.period}" ${p.period === period ? "checked" : ""} />${p.period}교시</label>`).join("");
+    function pillStyle(on, other) {
+      return on ? "background:#c46d49;color:#fff;border-color:#c46d49;"
+        : other ? "background:#f3ebdd;color:#a89a86;border-style:dashed;border-color:#d8c9b2;"
+        : "background:#fff;border-color:var(--border-soft);";
+    }
+    function renderSlotPills(sel) {
+      document.getElementById("slotGrid").innerHTML = DAYS.map((d) => `
+        <div class="flex items-center gap-2"><span class="w-6 text-sm font-bold text-center">${d}</span>
+          <div class="flex flex-wrap gap-1">${state.periods.map((p) => {
+            const k = `${d}_${p.period}`, c = state.timetable[k], on = sel.has(k);
+            const other = !!(c && c.subject && !sameClass(c, slotOrig));
+            return `<button type="button" class="slotPill w-8 h-8 sm:w-9 sm:h-9 rounded-xl text-xs font-bold border cursor-pointer" data-k="${k}" data-on="${on ? 1 : 0}" data-other="${other ? 1 : 0}" onclick="toggleSlotPill(this)" title="${other ? escapeHtmlAttr("다른 수업: " + (c.room || c.subject)) : ""}" style="${pillStyle(on, other)}">${p.period}</button>`;
+          }).join("")}</div></div>`).join("");
+    }
+    function toggleSlotPill(b) {
+      const on = b.dataset.on !== "1";
+      b.dataset.on = on ? "1" : "0";
+      b.setAttribute("style", pillStyle(on, b.dataset.other === "1"));
+    }
+    function showSlotModal(title, sel) {
+      document.getElementById("slotModalTitle").textContent = title;
+      document.getElementById("slotSubjectInput").value = slotOrig ? slotOrig.subject : "";
+      document.getElementById("slotRoomInput").value = slotOrig ? slotOrig.room : "";
+      document.getElementById("slotDeleteBtn").classList.toggle("hidden", !slotOrig);
+      renderSlotPills(sel);
       document.getElementById("slotModal").classList.remove("hidden");
       setTimeout(() => document.getElementById("slotSubjectInput").focus(), 30);
     }
-
-    function closeSlotModal() {
-      document.getElementById("slotModal").classList.add("hidden");
+    // 시간표 칸을 눌렀을 때: 그 수업이 들어 있는 모든 요일·교시가 선택된 상태로 열림
+    function editTimetableSlot(day, period) {
+      slotEditing = { day, period };
+      const cur = state.timetable[`${day}_${period}`];
+      slotOrig = cur && cur.subject ? { subject: cur.subject, room: cur.room || "" } : null;
+      const sel = new Set();
+      if (slotOrig) Object.keys(state.timetable).forEach((k) => { if (sameClass(state.timetable[k], slotOrig)) sel.add(k); });
+      else sel.add(`${day}_${period}`);
+      showSlotModal(slotOrig ? `${slotOrig.room || slotOrig.subject} 수정` : `${day}요일 ${period}교시 등록`, sel);
     }
+    function openNewClass() { slotOrig = null; showSlotModal("수업 추가", new Set()); }
+    function closeSlotModal() { document.getElementById("slotModal").classList.add("hidden"); }
 
     function saveSlotModal() {
       const subject = document.getElementById("slotSubjectInput").value.trim();
       const room = document.getElementById("slotRoomInput").value.trim();
-      if (!subject) return alert("교과목을 입력해 주세요. (삭제하려면 '삭제' 버튼을 눌러주세요)");
-      const days = Array.from(document.querySelectorAll(".slotDayCheck:checked")).map((c) => c.value);
-      const periods = Array.from(document.querySelectorAll(".slotPeriodCheck:checked")).map((c) => Number(c.value));
-      if (!days.length) days.push(slotEditing.day);
-      if (!periods.length) periods.push(slotEditing.period);
-      const targets = [];
-      days.forEach((d) => periods.forEach((pd) => targets.push(`${d}_${pd}`)));
-      const over = targets.filter((k) => { const c = state.timetable[k]; return c && c.subject && (c.subject !== subject || (c.room || "") !== room); }).length;
+      if (!subject) return alert("교과목을 입력해 주세요.");
+      const picked = Array.from(document.querySelectorAll(".slotPill")).filter((b) => b.dataset.on === "1").map((b) => b.dataset.k);
+      if (!picked.length) {
+        if (!slotOrig) return alert("요일 옆에서 교시를 하나 이상 선택해 주세요.");
+        if (!confirm("선택한 교시가 없어요. 이 수업을 시간표에서 모두 삭제할까요?")) return;
+      }
+      const over = picked.filter((k) => { const c = state.timetable[k]; return c && c.subject && !sameClass(c, slotOrig) && !sameClass(c, { subject, room }); }).length;
       if (over && !confirm(`이미 다른 수업이 등록된 ${over}칸을 덮어쓸까요?`)) return;
-      targets.forEach((k) => { state.timetable[k] = { subject, room, emoji: "📘" }; });
-      persist();
-      closeSlotModal();
-      renderTimetableModal();
-      renderAll();
+      if (slotOrig) Object.keys(state.timetable).forEach((k) => { if (sameClass(state.timetable[k], slotOrig) && !picked.includes(k)) delete state.timetable[k]; });
+      picked.forEach((k) => { state.timetable[k] = { subject, room, emoji: "📘" }; });
+      persist(); closeSlotModal(); renderTimetableModal(); renderAll();
     }
 
     function deleteSlotFromModal() {
-      delete state.timetable[`${slotEditing.day}_${slotEditing.period}`];
-      persist();
-      closeSlotModal();
-      renderTimetableModal();
-      renderAll();
+      if (!slotOrig || !confirm(`'${slotOrig.room || slotOrig.subject}' 수업을 시간표에서 모두 삭제할까요?`)) return;
+      Object.keys(state.timetable).forEach((k) => { if (sameClass(state.timetable[k], slotOrig)) delete state.timetable[k]; });
+      persist(); closeSlotModal(); renderTimetableModal(); renderAll();
     }
 
     function populateDutyBlockSelect() {
@@ -1674,7 +1687,7 @@
     booted = true;
   </script>
 
-  <!-- Firebase 로그인 + 클라우드 동기화 (VERSION 6.1) : 데이터는 users/{내 uid}/ 아래에만 저장 -->
+  <!-- Firebase 로그인 + 클라우드 동기화 (VERSION 6.2) : 데이터는 users/{내 uid}/ 아래에만 저장 -->
   <script type="module">
     const clean = (o) => JSON.parse(JSON.stringify(o));
     const gateReady = (ok, msg) => window.__gate && window.__gate.ready(ok, msg);
@@ -1719,7 +1732,7 @@
         const { st, dateStr, dayObj } = latest; latest = null;
         try {
           const now = new Date().toISOString();
-          await setDoc(U("planner", "settings"), clean({ version: "6.1", theme: st.theme, alarmLead: st.alarmLead, periods: st.periods, routineBlocks: st.routineBlocks, timetable: st.timetable, classMemos: st.classMemos, scheduledDuties: st.scheduledDuties, stateUpdatedAt: st.updatedAt || now, updatedAt: now }), { merge: true });
+          await setDoc(U("planner", "settings"), clean({ version: "6.2", theme: st.theme, alarmLead: st.alarmLead, periods: st.periods, routineBlocks: st.routineBlocks, timetable: st.timetable, classMemos: st.classMemos, scheduledDuties: st.scheduledDuties, stateUpdatedAt: st.updatedAt || now, updatedAt: now }), { merge: true });
           await setDoc(U("days", dateStr), clean({ ...dayObj, updatedAt: now }), { merge: true });
         } catch (err) { console.warn("저장 오류:", err); }
       }
