@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TeacherFlow VERSION 5.0 - 여유로운 교사의 하루 일과 & 수업 다이어리</title>
+  <title>TeacherFlow VERSION 5.2 - 여유로운 교사의 하루 일과 & 수업 다이어리</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap');
@@ -77,6 +77,23 @@
 </head>
 <body class="min-h-screen pb-20" data-theme="paper">
   <!-- 상단 미리 알림 배너 -->
+  <!-- 로그인 화면 (로그인한 본인만 사용) -->
+  <div id="loginGate" class="fixed inset-0 z-[100] flex items-center justify-center p-6" style="background:#f7f1e6;">
+    <div class="w-full max-w-sm text-center space-y-4 p-8 rounded-3xl bg-white shadow-lg">
+      <div class="text-5xl">🍎</div>
+      <h1 class="text-xl font-bold">TeacherFlow</h1>
+      <p class="text-xs" style="color:#8a7b6a;">VERSION 5.2 · 로그인한 나만 볼 수 있어요</p>
+      <p id="gateMsg" class="text-sm">로그인 상태를 확인하는 중…</p>
+      <div id="gateForm" class="hidden space-y-2 text-left">
+        <input id="gateEmail" type="email" autocomplete="username" placeholder="이메일" class="w-full p-3 rounded-xl border text-sm" style="border-color:#e2d6c4;" onkeydown="if(event.key==='Enter')document.getElementById('gatePw').focus()" />
+        <input id="gatePw" type="password" autocomplete="current-password" placeholder="비밀번호" class="w-full p-3 rounded-xl border text-sm" style="border-color:#e2d6c4;" onkeydown="if(event.key==='Enter')gateSubmit()" />
+        <button type="button" onclick="gateSubmit()" class="w-full py-3 rounded-2xl text-sm font-bold text-white cursor-pointer" style="background:#c46d49;">로그인</button>
+        <button type="button" onclick="gateReset()" class="block mx-auto text-[11px] underline cursor-pointer" style="color:#8a7b6a;">비밀번호 재설정 메일 받기</button>
+      </div>
+      <button type="button" onclick="useLocalOnly()" class="text-xs underline cursor-pointer" style="color:#8a7b6a;">로그인 없이 이 기기에서만 사용</button>
+    </div>
+  </div>
+
   <div id="alarmBanner" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-xl bg-amber-50 border-2 border-amber-400 text-amber-950 rounded-2xl p-4 shadow-2xl flex items-center justify-between gap-3">
     <div class="flex items-center gap-3">
       <span class="text-2xl">🔔</span>
@@ -106,8 +123,9 @@
 
       <!-- 버전 표시 -->
       <div class="flex items-center gap-1 p-1.5 rounded-full theme-subtle">
-        <span class="px-3.5 py-1.5 rounded-full text-xs font-bold" style="background:#c46d49;color:#fff;">VERSION 5.0</span>
+        <span class="px-3.5 py-1.5 rounded-full text-xs font-bold" style="background:#c46d49;color:#fff;">VERSION 5.2</span>
       </div>
+      <div id="authBox" class="flex items-center gap-1.5 text-xs"></div>
     </div>
 
     <!-- 기능 칩 바 (맨 위에서 시간표 등록) -->
@@ -937,13 +955,61 @@
     }
 
 
-    // ───────── 학급·학생·출결 (이 기기에만 저장 / Firebase 미전송) ─────────
+
+    // ───────── 로그인 화면/상태 ─────────
+    window.__gate = {
+      ready(ok, msg) { document.getElementById("loginGate").classList.remove("hidden"); document.getElementById("gateMsg").textContent = msg || ""; document.getElementById("gateForm").classList.toggle("hidden", !ok); },
+      hide() { document.getElementById("loginGate").classList.add("hidden"); }
+    };
+    function renderAuthBox(email) {
+      const b = document.getElementById("authBox"); if (!b) return;
+      b.innerHTML = email
+        ? `<span class="px-2.5 py-1.5 rounded-full theme-subtle font-bold">👤 ${escapeHtmlText(email)}</span><button type="button" onclick="logoutClicked()" class="px-3 py-1.5 rounded-full theme-subtle font-bold cursor-pointer">로그아웃</button>`
+        : `<button type="button" onclick="loginClicked()" class="px-3 py-1.5 rounded-full theme-subtle font-bold cursor-pointer">☁️ 로그인</button>`;
+    }
+    function loginClicked() { if (window.__emailLogin) window.__gate.ready(true, "이메일과 비밀번호로 로그인해 주세요."); else alert("현재 환경에서는 로그인을 사용할 수 없어요."); }
+    async function gateSubmit() {
+      const e = document.getElementById("gateEmail").value.trim(), pw = document.getElementById("gatePw").value;
+      if (!e || !pw) return window.__gate.ready(true, "이메일과 비밀번호를 입력해 주세요.");
+      if (!window.__emailLogin) return;
+      window.__gate.ready(true, "로그인 중…");
+      const msg = await window.__emailLogin(e, pw);
+      if (msg) window.__gate.ready(true, msg);
+    }
+    async function gateReset() {
+      const e = document.getElementById("gateEmail").value.trim();
+      if (!e) return window.__gate.ready(true, "위 칸에 이메일을 먼저 입력해 주세요.");
+      if (window.__resetPw) window.__gate.ready(true, await window.__resetPw(e));
+    }
+    function useLocalOnly() { window.__gate.hide(); renderAuthBox(null); }
+    async function logoutClicked() {
+      if (!confirm("로그아웃할까요?")) return;
+      const wipe = confirm("이 기기에 저장된 시간표·학생 정보도 지울까요?\n(공용 PC라면 '확인'을 권장해요. 클라우드에는 그대로 남아 다시 로그인하면 복원돼요.\n※ 학생 정보 동기화를 꺼 둔 경우에는 복원되지 않아요.)");
+      try { if (window.__logout) await window.__logout(); } catch (e) {}
+      if (wipe) Object.keys(localStorage).filter((k) => k.startsWith("teacherflow_")).forEach((k) => localStorage.removeItem(k));
+      location.reload();
+    }
+    function refreshAfterSync() {
+      renderAll();
+      if (sctx && !document.getElementById("studentModal").classList.contains("hidden")) renderStudentModal();
+    }
+    function mergeCloudRoster(cCls, cRec, cTs) {
+      roster.classes = cCls; roster.rec = cRec; roster.ts = cTs; saveRoster(true);
+    }
+    function setRosterSync(on) { roster.sync = !!on; saveRoster(); }
+    renderAuthBox(null);
+
+    // ───────── 학급·학생·출결 (로그인 시 내 계정 클라우드와 동기화) ─────────
     let roster = { classes: {}, rec: {} };
     const RK = "teacherflow_roster_v1";
     const ST = [["P", "출석"], ["L", "지각"], ["E", "조퇴"], ["A", "결석"], ["O", "인정"]];
     let sctx = null;
-    function loadRoster() { try { const r = JSON.parse(localStorage.getItem(RK) || "null"); if (r && r.classes) roster = { classes: r.classes, rec: r.rec || {} }; } catch (e) {} }
-    function saveRoster() { try { localStorage.setItem(RK, JSON.stringify(roster)); } catch (e) {} }
+    function loadRoster() { try { const r = JSON.parse(localStorage.getItem(RK) || "null"); if (r && r.classes) roster = { classes: r.classes, rec: r.rec || {}, sync: r.sync, ts: r.ts || "" }; } catch (e) {} }
+    function saveRoster(skipCloud) {
+      if (!skipCloud) roster.ts = new Date().toISOString();
+      try { localStorage.setItem(RK, JSON.stringify(roster)); } catch (e) {}
+      if (!skipCloud && roster.sync === true && window.__tfCloud && window.__tfCloud.syncRoster) window.__tfCloud.syncRoster();
+    }
     function classKeyOf(slotKey) { const c = state.timetable[slotKey] || {}; return (c.room || c.subject || "").trim(); }
     function recKey(c) { return `${c.date}|${c.cls}|${c.period}`; }
     function getRec(c, create) { const k = recKey(c); if (!roster.rec[k] && create) roster.rec[k] = { att: {}, prog: "", sp: "" }; return roster.rec[k] || { att: {}, prog: "", sp: "" }; }
@@ -964,24 +1030,66 @@
       sctx = { date: document.getElementById("selectedDate").value || todayISO(), period: Number(pd), cls: classKeyOf(slotKey), subject: c.subject || "", mode: "att" };
       showStudentModal();
     }
-    function openClassRoster(cls) { sctx = { cls, mode: "roster" }; showStudentModal(); }
+    function openClassRoster(enc) { sctx = { cls: decodeURIComponent(enc), mode: "roster" }; showStudentModal(); }
+    function openDaily(enc) { sctx = { date: todayISO(), period: 0, cls: decodeURIComponent(enc), subject: "일일 출결(담임)", mode: "att" }; showStudentModal(); }
+    function setSctxDate(v) { if (v) { sctx.date = v; renderStudentModal(); } }
+    function shiftSctxDate(n) { const d = new Date(sctx.date + "T00:00:00"); d.setDate(d.getDate() + n); setSctxDate(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`); }
+    function dateNavHtml() {
+      const d = new Date(sctx.date + "T00:00:00"), w = ["일", "월", "화", "수", "목", "금", "토"][d.getDay()];
+      return `<div class="flex items-center gap-2"><button type="button" onclick="shiftSctxDate(-1)" class="px-2.5 py-1.5 rounded-lg theme-subtle text-xs font-bold cursor-pointer">◀</button><input type="date" value="${sctx.date}" onchange="setSctxDate(this.value)" class="p-1.5 rounded-lg border text-xs font-bold bg-white" style="border-color: var(--border-soft);" /><button type="button" onclick="shiftSctxDate(1)" class="px-2.5 py-1.5 rounded-lg theme-subtle text-xs font-bold cursor-pointer">▶</button><span class="text-xs font-bold">${w}요일</span></div>`;
+    }
+    function openStuLog(id) { sctx = { mode: "log", cls: sctx.cls, sid: id, back: sctx }; renderStudentModal(); }
+    function backFromLog() { sctx = sctx.back; renderStudentModal(); }
+    function addLogEntry() {
+      const st = stuList(sctx.cls).find((x) => x.id === sctx.sid), t = document.getElementById("logText").value.trim();
+      if (!st || !t) return alert("기록할 내용을 입력해 주세요.");
+      st.log = st.log || [];
+      st.log.push({ id: newStuId(), d: document.getElementById("logDate").value || todayISO(), c: document.getElementById("logCat").value, t });
+      saveRoster(); renderStudentModal();
+    }
+    function delLogEntry(id) {
+      const st = stuList(sctx.cls).find((x) => x.id === sctx.sid); if (!st || !confirm("이 기록을 삭제할까요?")) return;
+      st.log = (st.log || []).filter((x) => x.id !== id); saveRoster(); renderStudentModal();
+    }
+    function renderStuLog(card, body) {
+      const E = escapeHtmlText, A = escapeHtmlAttr, st = stuList(sctx.cls).find((x) => x.id === sctx.sid);
+      if (!st) { sctx = sctx.back; return renderStudentModal(); }
+      const cnt = { L: 0, E: 0, A: 0, O: 0 }, ds = { L: [], E: [], A: [], O: [] };
+      Object.keys(roster.rec).sort().forEach((k) => { const [d, c, p] = k.split("|"); if (c !== sctx.cls || p !== "0") return; const a = roster.rec[k].att[st.id]; if (a && cnt[a.s] !== undefined) { cnt[a.s]++; ds[a.s].push(d.slice(5)); } });
+      const nm = { L: "지각", E: "조퇴", A: "결석", O: "인정" };
+      const cats = ["생활", "학습", "상담", "건강", "교우", "기타"];
+      document.getElementById("stuTitle").textContent = `📋 ${st.name || "학생"} 특이사항 기록`;
+      document.getElementById("stuSub").textContent = `${sctx.cls} · 날짜별로 기록해 두면 상담·생활기록부 작성에 도움이 돼요.`;
+      const logs = (st.log || []).slice().sort((a, b) => (b.d || "").localeCompare(a.d || ""));
+      body.innerHTML = `<button type="button" onclick="backFromLog()" class="px-3 py-1.5 rounded-xl text-xs font-bold theme-subtle cursor-pointer">← 돌아가기</button>
+        <div class="p-3 rounded-xl theme-subtle text-xs space-y-1"><div class="font-bold">📅 일일 출결 누계</div>${Object.keys(cnt).map((c) => `<div>${nm[c]} <b>${cnt[c]}</b>회${ds[c].length ? " · " + ds[c].slice(-12).join(", ") : ""}</div>`).join("")}
+          ${st.note ? `<div class="pt-1 text-accent font-bold">📌 상시: ${E(st.note)}</div>` : ""}</div>
+        <div class="p-3 rounded-xl theme-subtle space-y-2"><div class="flex flex-wrap gap-2"><input id="logDate" type="date" value="${todayISO()}" class="p-1.5 rounded-lg border text-xs bg-white" style="border-color: var(--border-soft);" />
+          <select id="logCat" class="p-1.5 rounded-lg border text-xs bg-white" style="border-color: var(--border-soft);">${cats.map((c) => `<option>${c}</option>`).join("")}</select></div>
+          <textarea id="logText" rows="3" placeholder="특이사항을 기록하세요 (예: 모둠활동에서 갈등 조정함, 보호자 상담 요청 등)" class="w-full p-2 rounded-xl border text-sm bg-white" style="border-color: var(--border-soft);"></textarea>
+          <button type="button" onclick="addLogEntry()" class="px-4 py-1.5 rounded-xl text-xs font-bold btn-accent cursor-pointer">기록 추가</button></div>
+        <div class="space-y-1.5">${logs.map((l) => `<div class="p-2.5 rounded-xl theme-subtle text-xs flex gap-2"><span class="font-bold whitespace-nowrap">${E(l.d)}</span><span class="px-1.5 rounded-full bg-white font-bold whitespace-nowrap">${E(l.c)}</span><span class="flex-1">${E(l.t)}</span><button type="button" onclick="delLogEntry('${l.id}')" class="text-rose-700 font-bold cursor-pointer">삭제</button></div>`).join("") || '<div class="text-xs" style="color: var(--text-muted);">아직 기록이 없어요.</div>'}</div>`;
+      card.scrollTop = 0;
+    }
     function openRosterManager() {
       sctx = { mode: "manager" };
       showStudentModal();
     }
     function showStudentModal() { renderStudentModal(); document.getElementById("studentModal").classList.remove("hidden"); }
-    function closeStudentModal() { saveRoster(); document.getElementById("studentModal").classList.add("hidden"); renderAll(); }
+    function closeStudentModal() { document.getElementById("studentModal").classList.add("hidden"); renderAll(); }
 
     function renderStudentModal() {
       const card = document.getElementById("studentCard"), top = card.scrollTop;
       const body = document.getElementById("stuBody"), E = escapeHtmlText, A = escapeHtmlAttr;
       const btn = "px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer";
+      if (sctx.mode === "log") return renderStuLog(card, body);
       if (sctx.mode === "manager") {
         const keys = new Set(Object.keys(roster.classes));
         Object.values(state.timetable).forEach((c) => { const k = (c.room || c.subject || "").trim(); if (k) keys.add(k); });
         document.getElementById("stuTitle").textContent = "👥 학급·학생 관리";
         document.getElementById("stuSub").textContent = "시간표에 등록한 학반이 자동으로 나타납니다. 학생 정보는 이 기기(브라우저)에만 저장됩니다.";
-        body.innerHTML = `<div class="flex flex-wrap gap-2">${[...keys].sort().map((k) => `<button type="button" onclick="openClassRoster('${A(k).replace(/'/g, "&#39;")}')" class="${btn} theme-subtle border-accent-hover">${E(k)} · ${stuList(k).length}명</button>`).join("") || '<span class="text-xs" style="color: var(--text-muted);">먼저 시간표를 등록해 주세요.</span>'}</div>
+        body.innerHTML = `<div class="space-y-1.5">${[...keys].sort().map((k) => { const e = encodeURIComponent(k); return `<div class="flex flex-wrap items-center gap-2 p-2.5 rounded-xl theme-subtle"><span class="text-sm font-bold">${E(k)}</span><span class="text-xs" style="color: var(--text-muted);">${stuList(k).length}명</span><span class="ml-auto flex gap-1.5"><button type="button" onclick="openDaily('${e}')" class="${btn} btn-accent">📅 일일 출결</button><button type="button" onclick="openClassRoster('${e}')" class="${btn} theme-subtle">명단·특이사항</button></span></div>`; }).join("") || '<span class="text-xs" style="color: var(--text-muted);">먼저 시간표를 등록해 주세요.</span>'}</div>
+          <label class="flex items-center gap-2 text-xs font-bold p-2.5 rounded-xl theme-subtle"><input type="checkbox" ${roster.sync === true ? "checked" : ""} onchange="setRosterSync(this.checked)" /> ☁️ 학생 명단·출결·특이사항도 Firebase 클라우드에 동기화 (기본: 꺼짐 = 이 기기에만 저장 · 학교 지침 확인 후 켜세요)</label>
           <div class="pt-3 border-t flex flex-wrap gap-2 items-center" style="border-color: var(--border-soft);">
             <div class="w-full p-3 rounded-2xl theme-subtle space-y-1.5"><div class="text-xs font-bold">📊 엑셀로 전체 학급 명단 한 번에 등록</div>
               <div class="text-[11px]" style="color: var(--text-muted);">열 제목을 <b>학반, 번호, 이름</b>으로 만들어 저장한 xlsx·csv 파일을 선택하세요. 여러 학반을 한 파일에 넣을 수 있어요.</div>
@@ -989,12 +1097,12 @@
               <button type="button" onclick="downloadStudentTemplate()" class="${btn} theme-subtle">📄 양식 내려받기</button></div></div>
             <button type="button" onclick="exportRoster()" class="${btn} btn-accent">📥 백업 파일 내려받기</button>
             <label class="${btn} theme-subtle">📤 백업 불러오기<input type="file" accept=".json" class="hidden" onchange="importRoster(this.files[0])" /></label>
-            <span class="text-[11px]" style="color: var(--text-muted);">기기를 바꾸거나 브라우저 데이터를 지우기 전에 꼭 백업하세요.</span>
+            <span class="text-[11px]" style="color: var(--text-muted);">기기를 바꾸거나 브라우저 데이터를 지우기 전에 꼭 백업하고, 백업 파일은 구글 드라이브(학교 계정 권장)에 올려 보관하세요.</span>
           </div>`;
         return;
       }
       const cls = sctx.cls, list = stuList(cls), att = sctx.mode === "att";
-      document.getElementById("stuTitle").textContent = att ? `${sctx.period}교시 ${sctx.subject} · ${cls || "학급 미지정"}` : `${cls} 학생 명단`;
+      document.getElementById("stuTitle").textContent = att ? (sctx.period === 0 ? `📅 일일 출결(담임) · ${cls || "학급 미지정"}` : `${sctx.period}교시 ${sctx.subject} · ${cls || "학급 미지정"}`) : `${cls} 학생 명단`;
       document.getElementById("stuSub").textContent = att ? `${sctx.date} · 출결은 기본 '출석'이며 예외만 눌러 표시합니다. 자동 저장됩니다.` : "이름을 고치거나 학생을 추가·삭제할 수 있습니다.";
       if (!cls) { body.innerHTML = `<p class="text-sm">시간표 등록에서 <b>학반/강의실</b>을 입력하면 학생 명단을 만들 수 있어요.</p>`; return; }
       if (!list.length) {
@@ -1013,10 +1121,11 @@
       let h = "";
       if (att) {
         const prev = Object.keys(roster.rec).filter((k) => { const [d, c] = k.split("|"); return c === cls && d < sctx.date && roster.rec[k].prog; }).sort().pop();
+        if (sctx.period === 0) h += dateNavHtml();
         h += `<div class="flex flex-wrap gap-2 text-xs font-bold">${ST.map(([c, n]) => `<span class="px-2.5 py-1 rounded-full theme-subtle">${n} ${cnt[c]}</span>`).join("")}<button type="button" onclick="allPresent()" class="${btn} theme-subtle">전체 출석으로</button></div>
           ${prev ? `<div class="text-xs p-2.5 rounded-xl theme-subtle">📖 지난 진도 (${prev.split("|")[0]}): <b>${E(roster.rec[prev].prog)}</b>${roster.rec[prev].sp ? ` · ${E(roster.rec[prev].sp)}` : ""}</div>` : ""}
-          <div class="grid md:grid-cols-2 gap-2"><div><label class="block text-[11px] font-bold mb-1">📖 오늘 진도</label><input type="text" value="${A(r.prog)}" oninput="setRecField('prog',this.value)" placeholder="예: 3단원 2차시 (45~48쪽)" class="w-full p-2 rounded-xl theme-subtle text-sm" /></div>
-          <div><label class="block text-[11px] font-bold mb-1">✏️ 수업 특이사항·다음 시간 준비</label><input type="text" value="${A(r.sp)}" oninput="setRecField('sp',this.value)" placeholder="예: 모둠활동 시간 부족, 다음 시간 준비물 가위" class="w-full p-2 rounded-xl theme-subtle text-sm" /></div></div>`;
+          <div class="grid md:grid-cols-2 gap-2"><div><label class="block text-[11px] font-bold mb-1">${sctx.period === 0 ? "📢 오늘 학급 전달·조회 메모" : "📖 오늘 진도"}</label><input type="text" value="${A(r.prog)}" oninput="setRecField('prog',this.value)" placeholder="예: 3단원 2차시 (45~48쪽)" class="w-full p-2 rounded-xl theme-subtle text-sm" /></div>
+          <div><label class="block text-[11px] font-bold mb-1">${sctx.period === 0 ? "✏️ 오늘 학급 특이사항" : "✏️ 수업 특이사항·다음 시간 준비"}</label><input type="text" value="${A(r.sp)}" oninput="setRecField('sp',this.value)" placeholder="예: 모둠활동 시간 부족, 다음 시간 준비물 가위" class="w-full p-2 rounded-xl theme-subtle text-sm" /></div></div>`;
       }
       h += `<div class="space-y-1.5">` + list.map((st, i) => {
         const a = r.att[st.id] || { s: "P", n: "" };
@@ -1024,6 +1133,7 @@
           <span class="w-7 text-xs font-bold text-center">${i + 1}</span>
           <input type="text" value="${A(st.name)}" onchange="renameStudent('${st.id}',this.value)" placeholder="이름" class="w-24 p-1.5 rounded-lg border text-xs font-bold bg-white" style="border-color: var(--border-soft);" />
           <button type="button" onclick="editStuNote('${st.id}')" title="상시 특이사항(알레르기·유의점 등)" class="text-sm cursor-pointer">${st.note ? "📌" : "📍"}</button>
+          <button type="button" onclick="openStuLog('${st.id}')" title="특이사항 기록·출결 누계" class="text-sm cursor-pointer">📋${(st.log || []).length || ""}</button>
           ${att ? `<div class="flex gap-1">${ST.map(([c, n]) => `<button type="button" onclick="setAtt('${st.id}','${c}')" class="px-2 py-1 rounded-lg text-[11px] font-bold border cursor-pointer" style="border-color: var(--border-soft);${a.s === c ? "background:" + (c === "P" ? "#d1fae5" : c === "A" ? "#fecdd3" : "#fde68a") + ";" : "background:#fff;opacity:.7;"}">${n}</button>`).join("")}</div>
           <input type="text" value="${A(a.n)}" oninput="setStuNote('${st.id}',this.value)" placeholder="오늘 메모(발표·참여·행동 등)" class="flex-1 min-w-[140px] p-1.5 rounded-lg border text-xs bg-white" style="border-color: var(--border-soft);" />` : `<button type="button" onclick="removeStudent('${st.id}')" class="ml-auto text-[11px] text-rose-700 font-bold cursor-pointer">삭제</button>`}
           ${st.note ? `<div class="w-full pl-9 text-[11px] text-accent font-bold">📌 ${E(st.note)}</div>` : ""}
@@ -1547,18 +1657,15 @@
     booted = true;
   </script>
 
-  <!-- Firebase 클라우드 연동 (VERSION 5.0) -->
+  <!-- Firebase 로그인 + 클라우드 동기화 (VERSION 5.2) : 데이터는 users/{내 uid}/ 아래에만 저장 -->
   <script type="module">
-    const setStatus = (msg, isError) => {
-      if (typeof updateSyncStatusText === "function") updateSyncStatusText(msg, isError);
-    };
-    const clean = (obj) => JSON.parse(JSON.stringify(obj)); // undefined 값 제거 (Firestore 오류 방지)
-
+    const clean = (o) => JSON.parse(JSON.stringify(o));
+    const gateReady = (ok, msg) => window.__gate && window.__gate.ready(ok, msg);
     try {
-      const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js");
-      const { initializeFirestore, getFirestore, doc, setDoc, getDoc, getDocs, collection } =
-        await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js");
-
+      const B = "https://www.gstatic.com/firebasejs/10.14.1/";
+      const { initializeApp } = await import(B + "firebase-app.js");
+      const { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } = await import(B + "firebase-auth.js");
+      const { initializeFirestore, getFirestore, doc, setDoc, getDoc, getDocs, deleteDoc, collection } = await import(B + "firebase-firestore.js");
       const firebaseConfig = {
         apiKey: "AIzaSyCcz6XlN0G66zGVo3sgcpA8E11MuUYwSlc",
         authDomain: "teacher-flow-fd09b.firebaseapp.com",
@@ -1567,111 +1674,108 @@
         messagingSenderId: "880409549090",
         appId: "1:880409549090:web:36ebf98014d9955035ad7b"
       };
-
       const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
       let db;
-      try {
-        db = initializeFirestore(app, { experimentalAutoDetectLongPolling: true });
-      } catch (e1) {
-        console.warn("initializeFirestore 실패, getFirestore로 대체:", e1);
-        db = getFirestore(app);
-      }
+      try { db = initializeFirestore(app, { experimentalAutoDetectLongPolling: true }); } catch (e1) { db = getFirestore(app); }
 
-      let cloudReady = false; // 처음 불러오기가 끝나기 전에는 클라우드에 저장하지 않음 (덮어쓰기 방지)
-      let saveTimer = null;
-      let latest = null;
+      let uid = null, cloudReady = false, saveTimer = null, latest = null, rTimer = null, lastSync = 0;
+      let sent = { classes: {}, records: {} };
+      const U = (...p) => doc(db, "users", uid, ...p);
+      const C = (n) => collection(db, "users", uid, n);
+
+      const authMsg = (c) => ({
+        "auth/invalid-credential": "이메일 또는 비밀번호가 맞지 않아요.",
+        "auth/wrong-password": "이메일 또는 비밀번호가 맞지 않아요.",
+        "auth/user-not-found": "이메일 또는 비밀번호가 맞지 않아요.",
+        "auth/invalid-email": "이메일 형식을 확인해 주세요.",
+        "auth/too-many-requests": "시도가 너무 많아요. 잠시 후 다시 해 주세요.",
+        "auth/network-request-failed": "인터넷 연결을 확인해 주세요.",
+        "auth/operation-not-allowed": "Firebase 콘솔에서 이메일/비밀번호 로그인을 켜 주세요."
+      }[c] || "로그인하지 못했어요 (" + (c || "오류") + ")");
+      window.__emailLogin = async (email, pw) => { try { await signInWithEmailAndPassword(auth, email, pw); return ""; } catch (e) { return authMsg(e.code); } };
+      window.__resetPw = async (email) => { try { await sendPasswordResetEmail(auth, email); return "비밀번호 재설정 메일을 보냈어요. 메일함(스팸함 포함)을 확인해 주세요."; } catch (e) { return authMsg(e.code); } };
+      window.__logout = () => signOut(auth);
 
       async function doSave() {
-        if (!latest) return;
-        const { st, dateStr, dayObj } = latest;
-        latest = null;
+        if (!latest || !uid) return;
+        const { st, dateStr, dayObj } = latest; latest = null;
         try {
           const now = new Date().toISOString();
-          await setDoc(doc(db, "planner_settings", "teacherflow_v3_4"), clean({
-            version: "5.0",
-            theme: st.theme,
-            alarmLead: st.alarmLead,
-            periods: st.periods,
-            routineBlocks: st.routineBlocks,
-            timetable: st.timetable,
-            classMemos: st.classMemos,
-            scheduledDuties: st.scheduledDuties,
-            stateUpdatedAt: st.updatedAt || now,
-            updatedAt: now
-          }), { merge: true });
-          await setDoc(doc(db, "planner_days", dateStr), clean({ ...dayObj, updatedAt: now }), { merge: true });
-          setStatus("Firebase 저장됨 · teacher-flow-fd09b", false);
-        } catch (err) {
-          console.warn("Firestore 저장 오류:", err);
-          /* silent */
-        }
+          await setDoc(U("planner", "settings"), clean({ version: "5.2", theme: st.theme, alarmLead: st.alarmLead, periods: st.periods, routineBlocks: st.routineBlocks, timetable: st.timetable, classMemos: st.classMemos, scheduledDuties: st.scheduledDuties, stateUpdatedAt: st.updatedAt || now, updatedAt: now }), { merge: true });
+          await setDoc(U("days", dateStr), clean({ ...dayObj, updatedAt: now }), { merge: true });
+        } catch (err) { console.warn("저장 오류:", err); }
       }
-
-      window.__tfCloud = {
-        saveAll: (st, dateStr, dayObj) => {
-          if (!cloudReady) return;
-          latest = { st, dateStr, dayObj: clean(dayObj) };
-          clearTimeout(saveTimer);
-          saveTimer = setTimeout(doSave, 600);
-        }
-      };
-
-      // ── 처음 접속 시 클라우드 데이터 불러오기 ──
-      try {
-        const snap = await getDoc(doc(db, "planner_settings", "teacherflow_v3_4"));
-        const hadLocal = !!window.__tfHadLocal;
-
-        if (snap.exists()) {
-          const c = snap.data();
-          const cloudStamp = c.stateUpdatedAt || c.updatedAt || "";
-          const localStamp = state.updatedAt || "";
-          const cloudWins = !hadLocal || cloudStamp > localStamp;
-
-          // 날짜별 일정 불러오기
-          const daysSnap = await getDocs(collection(db, "planner_days"));
-          const cloudDays = {};
-          daysSnap.forEach((d) => {
-            const { updatedAt, ...rest } = d.data();
-            cloudDays[d.id] = rest;
-          });
-
-          if (cloudWins) {
-            state = {
-              ...state,
-              theme: c.theme || state.theme,
-              alarmLead: c.alarmLead ?? state.alarmLead,
-              periods: Array.isArray(c.periods) && c.periods.length === 7 ? c.periods : state.periods,
-              routineBlocks: Array.isArray(c.routineBlocks) ? c.routineBlocks : state.routineBlocks,
-              timetable: c.timetable || state.timetable,
-              classMemos: c.classMemos || state.classMemos,
-              scheduledDuties: Array.isArray(c.scheduledDuties) ? c.scheduledDuties : state.scheduledDuties,
-              days: { ...state.days, ...cloudDays },
-              updatedAt: cloudStamp
-            };
-          } else {
-            // 이 기기의 데이터가 더 최신: 클라우드에만 있는 날짜만 채워 넣음
-            const merged = { ...cloudDays, ...state.days };
-            state = { ...state, days: merged };
+      async function doRosterSync() {
+        if (!cloudReady || !uid || roster.sync !== true) return;
+        try {
+          const maps = { classes: {}, records: {} };
+          Object.keys(roster.classes).forEach((k) => { maps.classes[encodeURIComponent(k)] = { cls: k, students: roster.classes[k] }; });
+          Object.keys(roster.rec).forEach((k) => { maps.records[encodeURIComponent(k)] = { key: k, ...roster.rec[k] }; });
+          for (const name of ["classes", "records"]) {
+            for (const id in maps[name]) { const v = clean(maps[name][id]), j = JSON.stringify(v); if (sent[name][id] !== j) { await setDoc(U(name, id), v); sent[name][id] = j; } }
+            for (const id in sent[name]) { if (!(id in maps[name])) { await deleteDoc(U(name, id)); delete sent[name][id]; } }
           }
-          setTheme(state.theme);
-          updateAlarmLabel();
-          renderAll();
-          persist(true);
-          setStatus(cloudWins ? "Firebase에서 불러옴 · teacher-flow-fd09b" : "Firebase 연결됨 · teacher-flow-fd09b", false);
-        } else {
-          /* silent */
-        }
-
-        cloudReady = true;
-        // 클라우드에 아직 데이터가 없거나 로컬이 더 최신이면 지금 상태를 올림
-        persist(true);
-      } catch (e) {
-        console.warn("Firestore 불러오기 오류:", e);
-        /* silent */
+          await setDoc(U("planner", "rosterMeta"), { ts: roster.ts || new Date().toISOString() });
+        } catch (e) { console.warn("학생 동기화 오류:", e); }
       }
+      function bindCloud() {
+        window.__tfCloud = {
+          saveAll: (st, dateStr, dayObj) => { if (!cloudReady) return; latest = { st, dateStr, dayObj: clean(dayObj) }; clearTimeout(saveTimer); saveTimer = setTimeout(doSave, 600); },
+          syncRoster: () => { clearTimeout(rTimer); rTimer = setTimeout(doRosterSync, 800); }
+        };
+      }
+
+      async function initialSync() {
+        try {
+          lastSync = Date.now();
+          const snap = await getDoc(U("planner", "settings"));
+          const hadLocal = !!window.__tfHadLocal;
+          if (snap.exists()) {
+            const c = snap.data(), cloudStamp = c.stateUpdatedAt || c.updatedAt || "", localStamp = state.updatedAt || "";
+            const cloudWins = !hadLocal || cloudStamp > localStamp;
+            const daysSnap = await getDocs(C("days")), cloudDays = {};
+            daysSnap.forEach((d) => { const { updatedAt, ...rest } = d.data(); cloudDays[d.id] = rest; });
+            if (cloudWins) {
+              state = { ...state, theme: c.theme || state.theme, alarmLead: c.alarmLead ?? state.alarmLead,
+                periods: Array.isArray(c.periods) && c.periods.length === 7 ? c.periods : state.periods,
+                routineBlocks: Array.isArray(c.routineBlocks) ? c.routineBlocks : state.routineBlocks,
+                timetable: c.timetable || state.timetable, classMemos: c.classMemos || state.classMemos,
+                scheduledDuties: Array.isArray(c.scheduledDuties) ? c.scheduledDuties : state.scheduledDuties,
+                days: { ...state.days, ...cloudDays }, updatedAt: cloudStamp };
+            } else {
+              state = { ...state, days: { ...cloudDays, ...state.days } };
+            }
+            setTheme(state.theme); updateAlarmLabel(); persist(true);
+          }
+          // 학생·출결 (동기화를 켠 경우)
+          if (roster.sync === true) {
+            const meta = await getDoc(U("planner", "rosterMeta"));
+            const cs = await getDocs(C("classes")), rs = await getDocs(C("records"));
+            const cCls = {}, cRec = {};
+            sent = { classes: {}, records: {} };
+            cs.forEach((d) => { const x = d.data(); cCls[x.cls] = x.students || []; sent.classes[d.id] = JSON.stringify(x); });
+            rs.forEach((d) => { const { key, ...rest } = d.data(); cRec[key] = rest; sent.records[d.id] = JSON.stringify(d.data()); });
+            const cTs = meta.exists() ? meta.data().ts || "" : "";
+            const hadLocalRoster = Object.keys(roster.classes).length > 0;
+            if (!cs.empty && (!hadLocalRoster || cTs > (roster.ts || ""))) mergeCloudRoster(cCls, cRec, cTs);
+          }
+          cloudReady = true;
+          refreshAfterSync();
+          persist(true);
+          window.__tfCloud.syncRoster();
+        } catch (e) { console.warn("불러오기 오류:", e); cloudReady = true; }
+      }
+
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) { uid = null; cloudReady = false; window.__tfCloud = null; renderAuthBox(null); gateReady(true, "이메일과 비밀번호로 로그인해 주세요."); return; }
+        uid = user.uid; bindCloud(); renderAuthBox(user.email || "로그인됨"); window.__gate.hide();
+        await initialSync();
+      });
+      document.addEventListener("visibilitychange", () => { if (!document.hidden && uid && cloudReady && Date.now() - lastSync > 120000) initialSync(); });
     } catch (e) {
-      console.warn("Firebase 초기화 오류:", e);
-      /* silent */
+      console.warn("Firebase 로드 실패:", e);
+      gateReady(false, "이 환경에서는 로그인을 사용할 수 없어요. 아래 버튼으로 이 기기에서만 사용할 수 있어요.");
     }
   </script>
 </body>
