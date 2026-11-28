@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TeacherFlow VERSION 6.2 - 여유로운 교사의 하루 일과 & 수업 다이어리</title>
+  <title>TeacherFlow VERSION 6.3 - 여유로운 교사의 하루 일과 & 수업 다이어리</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap');
@@ -82,7 +82,7 @@
     <div class="w-full max-w-sm text-center space-y-4 p-8 rounded-3xl bg-white shadow-lg">
       <div class="text-5xl">🍎</div>
       <h1 class="text-xl font-bold">TeacherFlow</h1>
-      <p class="text-xs" style="color:#8a7b6a;">VERSION 6.2 · 로그인한 나만 볼 수 있어요</p>
+      <p class="text-xs" style="color:#8a7b6a;">VERSION 6.3 · 로그인한 나만 볼 수 있어요</p>
       <p id="gateMsg" class="text-sm">로그인 상태를 확인하는 중…</p>
       <div id="gateForm" class="hidden space-y-2 text-left">
         <input id="gateEmail" type="email" autocomplete="username" placeholder="이메일" class="w-full p-3 rounded-xl border text-sm" style="border-color:#e2d6c4;" onkeydown="if(event.key==='Enter')document.getElementById('gatePw').focus()" />
@@ -123,7 +123,7 @@
 
       <!-- 버전 표시 -->
       <div class="flex items-center gap-1 p-1.5 rounded-full theme-subtle">
-        <span class="px-3.5 py-1.5 rounded-full text-xs font-bold" style="background:#c46d49;color:#fff;">VERSION 6.2</span>
+        <span class="px-3.5 py-1.5 rounded-full text-xs font-bold" style="background:#c46d49;color:#fff;">VERSION 6.3</span>
       </div>
       <div id="authBox" class="flex items-center gap-1.5 text-xs"></div>
     </div>
@@ -132,12 +132,12 @@
     <div class="flex flex-wrap items-center gap-2 mt-4">
       <button type="button" onclick="openTimetableModal()" class="px-3.5 py-2 rounded-full text-xs font-bold theme-card border-accent-hover transition flex items-center gap-1.5 cursor-pointer">
         <span>🗓️</span>
-        <span>시간표</span>
+        <span>수업 시간표</span>
       </button>
 
       <button type="button" onclick="openDutyModal()" class="px-3.5 py-2 rounded-full text-xs font-bold theme-card border-accent-hover transition flex items-center gap-1.5 cursor-pointer">
         <span>🚩</span>
-        <span>사전등록</span>
+        <span>업무(당직, 등교, 급식)</span>
       </button>
 
       <button type="button" onclick="openRosterManager()" class="px-3.5 py-2 rounded-full text-xs font-bold theme-card border-accent-hover transition flex items-center gap-1.5 cursor-pointer">
@@ -152,18 +152,18 @@
     </div>
   </header>
 
-  <!-- 당일 사전등록 일정 안내 배너 -->
+  <!-- 당일 업무 안내 배너 -->
   <section id="todayDutyBannerWrap" class="hidden max-w-5xl mx-auto px-4 mb-4">
     <div style="border-left-color: var(--accent);" class="theme-card p-4 border-l-4 flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-start gap-3">
         <span class="text-2xl">🚩</span>
         <div>
-          <div class="text-xs font-bold text-accent">오늘 사전등록 일정 안내</div>
+          <div class="text-xs font-bold text-accent">오늘 업무 안내</div>
           <div id="todayDutyListText" class="text-sm font-bold mt-0.5"></div>
         </div>
       </div>
       <button type="button" onclick="openDutyModal()" class="px-3 py-1.5 rounded-xl text-xs font-bold theme-subtle border-accent-hover cursor-pointer">
-        사전등록 관리 →
+        업무 관리 →
       </button>
     </div>
   </section>
@@ -246,10 +246,10 @@
             + 일정만들기
           </button>
           <button type="button" onclick="openDutyModal()" class="text-xs font-bold text-accent hover:underline cursor-pointer">
-            🚩 사전등록 →
+            🚩 업무(당직, 등교, 급식) →
           </button>
           <button type="button" onclick="openTimetableModal()" class="text-xs font-bold text-accent hover:underline cursor-pointer">
-            🗓️ 시간표 →
+            🗓️ 수업 시간표 →
           </button>
         </div>
       </div>
@@ -268,7 +268,7 @@
             <span>오늘의 시간 흐름</span>
           </h3>
           <p class="text-xs mt-1" style="color: var(--text-muted);">
-            사전등록한 항목과 시간표·일과 블록이 표시되며, 수업 있는 시간과 요일에는 해당 학급 수업 메모를 바로 남길 수 있습니다.
+            등록한 업무와 수업 시간표·일과 블록이 표시되며, 수업 있는 시간과 요일에는 해당 학급 수업 메모를 바로 남길 수 있습니다.
           </p>
         </div>
 
@@ -276,7 +276,7 @@
           <select id="filterMode" onchange="renderAll()" class="px-3.5 py-2 rounded-full text-xs font-bold theme-subtle cursor-pointer">
             <option value="all">🌈 전체 흐름 보기</option>
             <option value="class">📘 고정 수업만</option>
-            <option value="duty">🚩 사전등록만</option>
+            <option value="duty">🚩 업무만</option>
             <option value="routine">🌅 일과·행사만</option>
             <option value="task">🌱 할 일만</option>
           </select>
@@ -309,7 +309,7 @@
             <span>🗓️</span>
             <span>등록된 주간 시간표 요약</span>
           </h4>
-          <button type="button" onclick="openTimetableModal()" class="text-xs font-bold text-accent hover:underline cursor-pointer">시간표</button>
+          <button type="button" onclick="openTimetableModal()" class="text-xs font-bold text-accent hover:underline cursor-pointer">수업 시간표</button>
         </div>
         <div id="timetableSummaryBox" class="text-xs space-y-1.5" style="color: var(--text-muted);"></div>
       </div>
@@ -359,7 +359,7 @@
         <label class="block text-xs font-bold mb-1">일정 유형</label>
         <select id="newKind" onchange="autoEmojiByKind()" class="w-full p-2.5 rounded-xl theme-subtle text-sm">
           <option value="routine">🌅 일과 블록 (등교/조례/정리)</option>
-          <option value="duty">🚩 사전등록 항목</option>
+          <option value="duty">🚩 업무 항목</option>
           <option value="event">🤝 협의회 / 학교 행사</option>
           <option value="task">🌱 일반 할 일 / 업무</option>
           <option value="class">📘 보강 / 추가 수업</option>
@@ -399,7 +399,7 @@
     <div class="theme-card w-full max-w-5xl max-h-[94vh] overflow-y-auto p-3 sm:p-6 space-y-3 sm:space-y-4">
       <div class="flex items-center justify-between gap-2 flex-wrap">
         <div>
-          <h3 id="ttTitle" class="text-lg font-bold font-display-theme">🗓️ 시간표</h3>
+          <h3 id="ttTitle" class="text-lg font-bold font-display-theme">🗓️ 수업 시간표</h3>
           <p id="ttDesc" class="text-xs" style="color: var(--text-muted);"></p>
         </div>
         <div id="ttHeaderBtns" class="flex items-center gap-2 flex-wrap"></div>
@@ -425,7 +425,7 @@
           <tbody id="timetableModalBody"></tbody>
         </table>
       </div>
-      <div id="ttEmpty" class="hidden text-center text-sm py-4" style="color: var(--text-muted);">등록된 시간표가 없어요. 위의 <b>＋ 등록·수정</b> 버튼으로 등록해 보세요.</div>
+      <div id="ttEmpty" class="hidden text-center text-sm py-4" style="color: var(--text-muted);">등록된 수업 시간표가 없어요. 위의 <b>＋ 등록·수정</b> 버튼으로 등록해 보세요.</div>
     </div>
   </div>
 
@@ -472,54 +472,66 @@
     </div>
   </div>
 
-<!-- 사전등록 모달 (구분은 일정만들기 내용 선택) -->
-  <div id="dutyModal" class="hidden fixed inset-0 z-50 bg-black/45 flex items-center justify-center p-4">
-    <div class="theme-card w-full max-w-lg max-h-[88vh] overflow-y-auto p-6 space-y-4">
-      <div class="flex items-center justify-between">
+<!-- 업무(당직, 등교, 급식) 모달: 기본은 보기, ＋ 등록·수정을 누르면 편집 -->
+  <div id="dutyModal" class="hidden fixed inset-0 z-50 bg-black/45 flex items-center justify-center p-2 sm:p-4">
+    <div class="theme-card w-full max-w-2xl max-h-[92vh] overflow-y-auto p-4 sm:p-6 space-y-3">
+      <div class="flex items-center justify-between gap-2 flex-wrap">
         <div>
-          <h3 class="text-lg font-bold font-display-theme">🚩 사전등록</h3>
-          <p class="text-xs" style="color: var(--text-muted);">날짜와 구분(일정만들기 항목)을 선택해 등록하면 블록으로 남아 삭제 전까지 계속 사용할 수 있습니다.</p>
+          <h3 id="dutyTitle" class="text-lg font-bold font-display-theme">🚩 업무(당직, 등교, 급식)</h3>
+          <p id="dutyDesc" class="text-xs" style="color: var(--text-muted);"></p>
         </div>
-        <button type="button" onclick="closeDutyModal()" class="px-2.5 py-1 rounded-xl text-xs font-bold theme-subtle cursor-pointer">✕</button>
+        <div id="dutyHeaderBtns" class="flex items-center gap-2 flex-wrap"></div>
       </div>
+      <div id="dutyListBox" class="space-y-4"></div>
+    </div>
+  </div>
 
-      <div class="p-4 rounded-2xl theme-subtle space-y-3">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label for="dutyDateInput" class="block text-xs font-bold mb-1">날짜</label>
-            <input id="dutyDateInput" type="date" style="border-color: var(--border-soft);" class="w-full p-2 rounded-xl bg-white border text-xs" />
-          </div>
-          <div>
-            <label for="dutyTypeSelect" class="block text-xs font-bold mb-1">구분 (일정만들기 선택)</label>
-            <select id="dutyTypeSelect" onchange="syncDutyTimeFromBlock()" style="border-color: var(--border-soft);" class="w-full p-2 rounded-xl bg-white border text-xs"></select>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-3 gap-2">
-          <div>
-            <label for="dutyStartInput" class="block text-xs font-bold mb-1">시작 시각</label>
-            <input id="dutyStartInput" type="time" value="08:20" style="border-color: var(--border-soft);" class="w-full p-2 rounded-xl bg-white border text-xs" />
-          </div>
-          <div>
-            <label for="dutyEndInput" class="block text-xs font-bold mb-1">종료 시각</label>
-            <input id="dutyEndInput" type="time" value="08:50" style="border-color: var(--border-soft);" class="w-full p-2 rounded-xl bg-white border text-xs" />
-          </div>
-          <div>
-            <label for="dutyNoteInput" class="block text-xs font-bold mb-1">구역/비고</label>
-            <input id="dutyNoteInput" type="text" placeholder="예: 정문, 2층 식당" style="border-color: var(--border-soft);" class="w-full p-2 rounded-xl bg-white border text-xs" />
-          </div>
-        </div>
-
-        <div class="flex justify-end">
-          <button type="button" onclick="addScheduledDuty()" class="px-4 py-2 rounded-xl text-xs font-bold btn-accent cursor-pointer">
-            + 사전등록 추가
-          </button>
-        </div>
+  <!-- 업무 입력 창 (업무·시간·구역/비고·날짜 지정 또는 매주 반복) -->
+  <div id="dutyFormModal" class="hidden fixed inset-0 z-[60] bg-black/45 flex items-center justify-center p-3">
+    <div class="theme-card w-full max-w-md max-h-[92vh] overflow-y-auto p-5 space-y-3">
+      <div class="flex items-center justify-between">
+        <h3 id="dutyFormTitle" class="text-lg font-bold font-display-theme">업무 등록</h3>
+        <button type="button" onclick="closeDutyForm()" class="px-2.5 py-1 rounded-xl text-xs font-bold theme-subtle cursor-pointer">✕</button>
       </div>
-
       <div>
-        <div class="text-xs font-bold mb-2">📋 사전등록 블록 목록 (삭제 전까지 유지)</div>
-        <div id="scheduledDutyList" class="flex flex-wrap gap-2 text-xs"></div>
+        <label class="block text-xs font-bold mb-1">업무</label>
+        <input id="dutyTypeInput" list="dutyTypeList" type="text" placeholder="당직, 등교지도, 급식지도 또는 직접 입력" onchange="syncDutyTime()" class="w-full p-2.5 rounded-xl theme-subtle text-sm" />
+        <datalist id="dutyTypeList"></datalist>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <div><label class="block text-xs font-bold mb-1">시작 시각</label><input id="dutyStartInput" type="time" value="08:00" class="w-full p-2 rounded-xl theme-subtle text-sm" /></div>
+        <div><label class="block text-xs font-bold mb-1">종료 시각</label><input id="dutyEndInput" type="time" value="08:30" class="w-full p-2 rounded-xl theme-subtle text-sm" /></div>
+      </div>
+      <div>
+        <label class="block text-xs font-bold mb-1">구역/비고</label>
+        <input id="dutyNoteInput" type="text" placeholder="예: 정문, 2층 식당, 본관 순찰" class="w-full p-2.5 rounded-xl theme-subtle text-sm" />
+      </div>
+      <div>
+        <label class="block text-xs font-bold mb-1">등록 방식</label>
+        <div class="flex gap-2">
+          <button type="button" id="dutyModeDate" onclick="setDutyMode('date')" class="flex-1 py-2 rounded-xl text-xs font-bold border cursor-pointer">📅 날짜 지정</button>
+          <button type="button" id="dutyModeRepeat" onclick="setDutyMode('repeat')" class="flex-1 py-2 rounded-xl text-xs font-bold border cursor-pointer">🔁 매주 반복</button>
+        </div>
+      </div>
+      <div id="dutyDateSection" class="space-y-2">
+        <div class="flex gap-2"><input id="dutyDatePick" type="date" class="flex-1 p-2 rounded-xl theme-subtle text-sm" /><button type="button" onclick="addDutyDate()" class="px-3 py-2 rounded-xl text-xs font-bold btn-accent cursor-pointer">날짜 추가</button></div>
+        <div id="dutyDateChips" class="flex flex-wrap gap-1.5"></div>
+        <p class="text-[10px]" style="color: var(--text-muted);">미리 여러 날짜를 추가해 두면 해당 날짜의 시간 흐름에 자동으로 나타나요.</p>
+      </div>
+      <div id="dutyRepeatSection" class="hidden space-y-2">
+        <div id="dutyDayPills" class="flex gap-1.5"></div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="block text-[11px] font-bold mb-1">시작일 (선택)</label><input id="dutyFrom" type="date" class="w-full p-2 rounded-xl theme-subtle text-xs" /></div>
+          <div><label class="block text-[11px] font-bold mb-1">종료일 (선택)</label><input id="dutyUntil" type="date" class="w-full p-2 rounded-xl theme-subtle text-xs" /></div>
+        </div>
+        <p class="text-[10px]" style="color: var(--text-muted);">선택한 요일마다 자동으로 반복돼요. 쉬는 날은 시간 흐름에서 <b>이 날 제외</b>를 누르세요.</p>
+      </div>
+      <div class="flex items-center justify-between gap-2 pt-1">
+        <button type="button" id="dutyDeleteBtn" onclick="deleteDutyFromForm()" class="hidden px-3 py-2 rounded-xl text-xs font-bold theme-subtle cursor-pointer text-rose-700">🗑️ 삭제</button>
+        <div class="flex gap-2 ml-auto">
+          <button type="button" onclick="closeDutyForm()" class="px-4 py-2 rounded-xl text-xs font-bold theme-subtle cursor-pointer">취소</button>
+          <button type="button" onclick="saveDutyForm()" class="px-5 py-2 rounded-xl text-xs font-bold btn-accent cursor-pointer">저장</button>
+        </div>
       </div>
     </div>
   </div>
@@ -673,8 +685,20 @@
       return h * 60 + m;
     }
 
+    const WD = ["일", "월", "화", "수", "목", "금", "토"];
+    function dutyEmoji(t) { t = t || ""; return t.includes("급식") ? "🍽️" : t.includes("당직") ? "🌙" : "🚩"; }
+    function dutyOccursOn(d, dateStr) {
+      if (d.weekdays) {
+        const w = WD[new Date(dateStr + "T00:00:00").getDay()];
+        return d.weekdays.includes(w) && (!d.from || dateStr >= d.from) && (!d.until || dateStr <= d.until) && !(d.skip || []).includes(dateStr);
+      }
+      return d.date === dateStr;
+    }
     function getDutiesForDate(dateStr) {
-      return (state.scheduledDuties || []).filter((d) => d.date === dateStr);
+      return (state.scheduledDuties || []).filter((d) => dutyOccursOn(d, dateStr));
+    }
+    function dutyWhen(d) {
+      return d.weekdays ? `매주 ${d.weekdays.join("·")}${d.from ? ` · ${d.from.slice(5)}부터` : ""}${d.until ? ` ${d.until.slice(5)}까지` : ""}` : d.date;
     }
 
     function renderRoutineBlocks() {
@@ -788,13 +812,15 @@
 
       getDutiesForDate(dateStr).forEach((du) => {
         const id = `sched_duty_${du.id}`;
-        const emoji = du.type.includes("급식") ? "🍽️" : "🚩";
+        const emoji = dutyEmoji(du.type);
         entries.push({
           id,
+          dutyId: du.id,
+          repeat: !!du.weekdays,
           kind: "duty",
           emoji,
           title: `${du.type}${du.note ? ` (${du.note})` : ""}`,
-          sub: "사전등록 일정",
+          sub: du.weekdays ? "반복 업무" : "업무",
           start: du.start || "08:00",
           end: du.end || "08:30",
           done: doneSet.has(id)
@@ -822,7 +848,7 @@
       }
       wrap.classList.remove("hidden");
       textEl.innerHTML = duties
-        .map((d) => `<span class="inline-block mr-3">${d.type.includes("급식") ? "🍽️" : "🚩"} <strong>${escapeHtmlText(d.type)}</strong> (${d.start}~${d.end})${d.note ? ` · ${escapeHtmlText(d.note)}` : ""}</span>`)
+        .map((d) => `<span class="inline-block mr-3">${dutyEmoji(d.type)} <strong>${escapeHtmlText(d.type)}</strong> (${d.start}~${d.end})${d.note ? ` · ${escapeHtmlText(d.note)}` : ""}</span>`)
         .join("");
     }
 
@@ -846,7 +872,7 @@
         container.innerHTML = `
           <div style="color: var(--text-muted);" class="p-8 rounded-2xl theme-subtle text-center text-sm">
             <div class="text-2xl mb-1.5">🍃</div>
-            표시할 일정이 없습니다. 위 <strong>자주 쓰는 일과 블록</strong>을 누르거나 <strong>+ 일정 추가</strong> / <strong>시간표</strong>을 활용해 보세요.
+            표시할 일정이 없습니다. 위 <strong>자주 쓰는 일과 블록</strong>을 누르거나 <strong>+ 일정 추가</strong> / <strong>수업 시간표</strong>을 활용해 보세요.
           </div>
         `;
       } else {
@@ -859,7 +885,7 @@
         };
         const badgeLabel = {
           class: "📘 고정 수업",
-          duty: "🚩 사전등록",
+          duty: "🚩 업무",
           routine: "🌅 일과 블록",
           event: "🤝 협의회·행사",
           task: "🌱 할 일"
@@ -909,7 +935,7 @@
                   item.kind === "class"
                     ? `<button type="button" onclick="openStudentModal('${item.slotKey}')" class="px-2.5 py-1 rounded-xl text-xs font-bold btn-accent cursor-pointer">👥 출결·메모</button><button type="button" onclick="cancelTodayClass(${item.period})" style="border-color: var(--border-soft);" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-white/90 border hover:opacity-80 cursor-pointer">오늘 휴강</button>`
                     : item.id.startsWith("sched_duty_")
-                    ? `<button type="button" onclick="openDutyModal()" style="border-color: var(--border-soft);" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-white/90 border hover:opacity-80 cursor-pointer">사전등록 관리</button>`
+                    ? `${item.repeat ? `<button type="button" onclick="skipDutyOnDay('${item.dutyId}')" style="border-color: var(--border-soft);" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-white/90 border hover:opacity-80 cursor-pointer">이 날 제외</button>` : ""}<button type="button" onclick="openDutyModal()" style="border-color: var(--border-soft);" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-white/90 border hover:opacity-80 cursor-pointer">업무 관리</button>`
                     : `<button type="button" onclick="removeItem('${item.id}')" style="border-color: var(--border-soft);" class="px-2.5 py-1 rounded-xl text-xs font-bold text-rose-700 bg-white/90 border hover:opacity-80 cursor-pointer">삭제</button>`
                 }
               </div>
@@ -1101,7 +1127,7 @@
       const cls = sctx.cls, list = stuList(cls), att = sctx.mode === "att";
       document.getElementById("stuTitle").textContent = att ? (sctx.period === 0 ? `📅 일일 출결(담임) · ${cls || "학급 미지정"}` : `${sctx.period}교시 ${sctx.subject} · ${cls || "학급 미지정"}`) : `${cls} 학생 명단`;
       document.getElementById("stuSub").textContent = att ? `${sctx.date} · 출결은 기본 '출석'이며 예외만 눌러 표시합니다. 자동 저장됩니다.` : "이름을 고치거나 학생을 추가·삭제할 수 있습니다.";
-      if (!cls) { body.innerHTML = `<p class="text-sm">시간표에서 <b>학반/강의실</b>을 입력하면 학생 명단을 만들 수 있어요.</p>`; return; }
+      if (!cls) { body.innerHTML = `<p class="text-sm">수업 시간표에서 <b>학반/강의실</b>을 입력하면 학생 명단을 만들 수 있어요.</p>`; return; }
       if (!list.length) {
         body.innerHTML = `<div class="p-4 rounded-2xl theme-subtle space-y-2">
           <div class="text-sm font-bold">${E(cls)} 학생 등록</div>
@@ -1400,10 +1426,10 @@
     function renderTimetableModal(skipPanel) {
       const E = escapeHtmlText, btn = "px-4 py-1.5 rounded-xl text-xs font-bold cursor-pointer";
       const filled = Object.keys(state.timetable).some((k) => state.timetable[k] && state.timetable[k].subject);
-      document.getElementById("ttTitle").textContent = ttEdit ? "✏️ 시간표 등록·수정" : "🗓️ 시간표";
+      document.getElementById("ttTitle").textContent = ttEdit ? "✏️ 수업 시간표 등록·수정" : "🗓️ 수업 시간표";
       document.getElementById("ttDesc").textContent = ttEdit ? "＋ 수업 추가를 누르거나 시간표 칸을 눌러, 과목·학반을 입력하고 요일 옆에서 1~7교시를 선택하세요." : "내가 수업에 들어가는 학반과 과목이에요.";
       document.getElementById("ttHeaderBtns").innerHTML = ttEdit
-        ? `<button type="button" onclick="openNewClass()" class="${btn} btn-accent">＋ 수업 추가</button><button type="button" onclick="saveTimetableModal()" class="${btn} theme-subtle">💾 저장</button><button type="button" onclick="setTtEdit(false)" class="${btn} theme-subtle">← 시간표 보기</button><button type="button" onclick="closeTimetableModal()" class="${btn} theme-subtle">닫기 ✕</button>`
+        ? `<button type="button" onclick="openNewClass()" class="${btn} btn-accent">＋ 수업 추가</button><button type="button" onclick="saveTimetableModal()" class="${btn} theme-subtle">💾 저장</button><button type="button" onclick="setTtEdit(false)" class="${btn} theme-subtle">← 수업 시간표 보기</button><button type="button" onclick="closeTimetableModal()" class="${btn} theme-subtle">닫기 ✕</button>`
         : `<button type="button" onclick="setTtEdit(true)" class="${btn} btn-accent text-sm">＋ 등록·수정</button><button type="button" onclick="closeTimetableModal()" class="${btn} theme-subtle">닫기 ✕</button>`;
       const det = document.getElementById("periodTimesDetails");
       det.classList.toggle("hidden", !ttEdit);
@@ -1504,110 +1530,112 @@
       persist(); closeSlotModal(); renderTimetableModal(); renderAll();
     }
 
-    function populateDutyBlockSelect() {
-      const sel = document.getElementById("dutyTypeSelect");
-      const blocks = state.routineBlocks || [];
-      if (!blocks.length) {
-        sel.innerHTML = `<option value="">일정만들기에서 먼저 일정을 만들어 주세요</option>`;
-        return;
-      }
-      sel.innerHTML = blocks
-        .map((b) => `<option value="${escapeHtmlAttr(b.title)}">${escapeHtmlText(b.emoji || "🌅")} ${escapeHtmlText(b.title)} (${b.start}~${b.end})</option>`)
-        .join("");
-      syncDutyTimeFromBlock();
+    // ───────── 업무(당직, 등교, 급식) ─────────
+    let dutyEdit = false;
+    let dutyForm = { id: null, mode: "date", dates: [], days: new Set() };
+
+    function openDutyModal() { dutyEdit = false; renderDutyModal(); document.getElementById("dutyModal").classList.remove("hidden"); }
+    function closeDutyModal() { document.getElementById("dutyModal").classList.add("hidden"); }
+    function setDutyEdit(on) { dutyEdit = on; renderDutyModal(); }
+
+    function renderDutyModal() {
+      const E = escapeHtmlText, btn = "px-4 py-1.5 rounded-xl text-xs font-bold cursor-pointer";
+      document.getElementById("dutyTitle").textContent = dutyEdit ? "✏️ 업무 등록·수정" : "🚩 업무(당직, 등교, 급식)";
+      document.getElementById("dutyDesc").textContent = dutyEdit ? "＋ 업무 추가를 누르거나 업무의 ✏️를 눌러 수정하세요. 날짜를 지정하거나 매주 반복으로 등록할 수 있어요." : "등록한 업무가 날짜에 맞춰 시간 흐름에 자동으로 나타나요.";
+      document.getElementById("dutyHeaderBtns").innerHTML = dutyEdit
+        ? `<button type="button" onclick="openDutyForm()" class="${btn} btn-accent">＋ 업무 추가</button><button type="button" onclick="setDutyEdit(false)" class="${btn} theme-subtle">← 업무 보기</button><button type="button" onclick="closeDutyModal()" class="${btn} theme-subtle">닫기 ✕</button>`
+        : `<button type="button" onclick="setDutyEdit(true)" class="${btn} btn-accent text-sm">＋ 등록·수정</button><button type="button" onclick="closeDutyModal()" class="${btn} theme-subtle">닫기 ✕</button>`;
+      const all = state.scheduledDuties || [], today = todayISO();
+      const repeat = all.filter((d) => d.weekdays);
+      const single = all.filter((d) => !d.weekdays).sort((a, b) => a.date.localeCompare(b.date) || toMin(a.start) - toMin(b.start));
+      const row = (d) => `<div class="flex flex-wrap items-center gap-x-3 gap-y-1 p-3 rounded-2xl theme-subtle">
+          <span class="text-xl">${dutyEmoji(d.type)}</span>
+          <div class="flex-1 min-w-[160px]"><div class="font-bold text-sm">${E(d.type)}${d.note ? ` <span class="text-accent">· ${E(d.note)}</span>` : ""}</div>
+            <div class="text-xs" style="color: var(--text-muted);">${E(dutyWhen(d))} · ${d.start}~${d.end}</div></div>
+          ${dutyEdit ? `<button type="button" onclick="openDutyForm('${d.id}')" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-white border cursor-pointer" style="border-color: var(--border-soft);">✏️ 수정</button><button type="button" onclick="deleteDuty('${d.id}')" class="px-2.5 py-1 rounded-xl text-xs font-bold text-rose-700 bg-white border cursor-pointer" style="border-color: var(--border-soft);">삭제</button>` : ""}
+        </div>`;
+      const sec = (title, list) => list.length ? `<div><div class="text-xs font-bold mb-1.5">${title}</div><div class="space-y-1.5">${list.map(row).join("")}</div></div>` : "";
+      const html = sec("🔁 매주 반복 업무", repeat) + sec("📅 날짜 지정 업무 (예정)", single.filter((d) => d.date >= today)) + sec("🕘 지난 업무", single.filter((d) => d.date < today).reverse());
+      document.getElementById("dutyListBox").innerHTML = html || `<div class="text-center text-sm py-6" style="color: var(--text-muted);">등록된 업무가 없어요. 위의 <b>＋ 등록·수정</b> 버튼으로 당직, 등교지도, 급식지도를 등록해 보세요.</div>`;
     }
 
-    function syncDutyTimeFromBlock() {
-      const chosenTitle = document.getElementById("dutyTypeSelect").value;
-      const blk = (state.routineBlocks || []).find((b) => b.title === chosenTitle);
-      if (blk) {
-        document.getElementById("dutyStartInput").value = blk.start || "08:20";
-        document.getElementById("dutyEndInput").value = blk.end || "08:50";
-      }
+    function syncDutyTime() {
+      const t = document.getElementById("dutyTypeInput").value.trim();
+      const blk = (state.routineBlocks || []).find((b) => b.title === t);
+      if (blk) { document.getElementById("dutyStartInput").value = blk.start; document.getElementById("dutyEndInput").value = blk.end; }
     }
-
-    function openDutyModal() {
-      const selDate = document.getElementById("selectedDate").value || todayISO();
-      document.getElementById("dutyDateInput").value = selDate;
-      document.getElementById("dutyNoteInput").value = "";
-      populateDutyBlockSelect();
-      renderScheduledDutyList();
-      document.getElementById("dutyModal").classList.remove("hidden");
+    function openDutyForm(id) {
+      const d = id ? state.scheduledDuties.find((x) => x.id === id) : null;
+      dutyForm = { id: d ? d.id : null, mode: d && d.weekdays ? "repeat" : "date", dates: d && !d.weekdays ? [d.date] : (d ? [] : [document.getElementById("selectedDate").value || todayISO()]), days: new Set(d && d.weekdays ? d.weekdays : []) };
+      const names = ["당직", "등교지도", "급식지도"].concat((state.routineBlocks || []).map((b) => b.title));
+      document.getElementById("dutyTypeList").innerHTML = [...new Set(names)].map((n) => `<option value="${escapeHtmlAttr(n)}"></option>`).join("");
+      document.getElementById("dutyFormTitle").textContent = d ? "업무 수정" : "업무 등록";
+      document.getElementById("dutyTypeInput").value = d ? d.type : "";
+      document.getElementById("dutyStartInput").value = d ? d.start : "08:00";
+      document.getElementById("dutyEndInput").value = d ? d.end : "08:30";
+      document.getElementById("dutyNoteInput").value = d ? d.note || "" : "";
+      document.getElementById("dutyFrom").value = d && d.from ? d.from : "";
+      document.getElementById("dutyUntil").value = d && d.until ? d.until : "";
+      document.getElementById("dutyDatePick").value = "";
+      document.getElementById("dutyDeleteBtn").classList.toggle("hidden", !d);
+      renderDutyForm();
+      document.getElementById("dutyFormModal").classList.remove("hidden");
     }
-
-    function closeDutyModal() {
-      document.getElementById("dutyModal").classList.add("hidden");
+    function closeDutyForm() { document.getElementById("dutyFormModal").classList.add("hidden"); }
+    function setDutyMode(m) { dutyForm.mode = m; renderDutyForm(); }
+    function addDutyDate() {
+      const v = document.getElementById("dutyDatePick").value;
+      if (!v) return alert("날짜를 선택해 주세요.");
+      if (!dutyForm.dates.includes(v)) dutyForm.dates.push(v);
+      dutyForm.dates.sort(); document.getElementById("dutyDatePick").value = ""; renderDutyForm();
     }
-
-    function addScheduledDuty() {
-      const date = document.getElementById("dutyDateInput").value;
-      const type = document.getElementById("dutyTypeSelect").value.trim();
-      const start = document.getElementById("dutyStartInput").value;
-      const end = document.getElementById("dutyEndInput").value;
+    function removeDutyDate(v) { dutyForm.dates = dutyForm.dates.filter((x) => x !== v); renderDutyForm(); }
+    function toggleDutyDay(d) { if (dutyForm.days.has(d)) dutyForm.days.delete(d); else dutyForm.days.add(d); renderDutyForm(); }
+    function renderDutyForm() {
+      const on = "background:#c46d49;color:#fff;border-color:#c46d49;", off = "background:#fff;border-color:var(--border-soft);";
+      const isRep = dutyForm.mode === "repeat";
+      document.getElementById("dutyModeDate").setAttribute("style", isRep ? off : on);
+      document.getElementById("dutyModeRepeat").setAttribute("style", isRep ? on : off);
+      document.getElementById("dutyDateSection").classList.toggle("hidden", isRep);
+      document.getElementById("dutyRepeatSection").classList.toggle("hidden", !isRep);
+      document.getElementById("dutyDateChips").innerHTML = dutyForm.dates.map((v) => `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full theme-subtle text-xs font-bold">${v.slice(5)} <button type="button" onclick="removeDutyDate('${v}')" class="text-rose-700 cursor-pointer">✕</button></span>`).join("") || '<span class="text-xs" style="color: var(--text-muted);">날짜를 추가해 주세요.</span>';
+      document.getElementById("dutyDayPills").innerHTML = DAYS.map((d) => `<button type="button" onclick="toggleDutyDay('${d}')" class="w-10 h-10 rounded-xl text-sm font-bold border cursor-pointer" style="${dutyForm.days.has(d) ? on : off}">${d}</button>`).join("");
+    }
+    function saveDutyForm() {
+      const type = document.getElementById("dutyTypeInput").value.trim();
+      const start = document.getElementById("dutyStartInput").value, end = document.getElementById("dutyEndInput").value;
       const note = document.getElementById("dutyNoteInput").value.trim();
-      if (!date) return alert("날짜를 선택해 주세요.");
-      if (!type) return alert("구분(일정만들기 항목)을 선택해 주세요.");
-
-      state.scheduledDuties.push({
-        id: "duty_" + Date.now() + "_" + Math.random().toString(36).slice(2, 5),
-        date,
-        type,
-        start,
-        end,
-        note
-      });
-      state.scheduledDuties.sort((a, b) => a.date.localeCompare(b.date) || toMin(a.start) - toMin(b.start));
-      document.getElementById("dutyNoteInput").value = "";
-      persist();
-      renderScheduledDutyList();
-      renderAll();
-    }
-
-    function deleteScheduledDuty(id) {
-      state.scheduledDuties = (state.scheduledDuties || []).filter((d) => d.id !== id);
-      persist();
-      renderScheduledDutyList();
-      renderAll();
-    }
-
-    function applyScheduledDutyToDay(dutyId) {
-      const du = (state.scheduledDuties || []).find((d) => d.id === dutyId);
-      if (!du) return;
-      const dateStr = document.getElementById("selectedDate").value || todayISO();
-      const d = getDay(dateStr);
-      d.items.push({
-        id: "duty_blk_" + Date.now() + "_" + Math.random().toString(36).slice(2, 5),
-        kind: "duty",
-        emoji: du.type.includes("급식") ? "🍽️" : "🚩",
-        title: `${du.type}${du.note ? ` (${du.note})` : ""}`,
-        sub: `사전등록 (${du.date})`,
-        start: du.start,
-        end: du.end
-      });
-      closeDutyModal();
-      renderAll();
-    }
-
-    function renderScheduledDutyList() {
-      const box = document.getElementById("scheduledDutyList");
-      if (!state.scheduledDuties.length) {
-        box.innerHTML = `<div style="color: var(--text-muted);" class="p-3 rounded-xl theme-subtle w-full">사전등록된 블록이 없습니다. 위에서 날짜와 구분을 선택해 추가해 보세요.</div>`;
-        return;
+      if (!type) return alert("업무를 입력해 주세요.");
+      if (!start || !end) return alert("시작·종료 시각을 입력해 주세요.");
+      const mk = () => "duty_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6);
+      const list = state.scheduledDuties || (state.scheduledDuties = []);
+      const old = dutyForm.id ? list.findIndex((x) => x.id === dutyForm.id) : -1;
+      if (dutyForm.mode === "repeat") {
+        if (!dutyForm.days.size) return alert("반복할 요일을 선택해 주세요.");
+        const from = document.getElementById("dutyFrom").value, until = document.getElementById("dutyUntil").value;
+        if (from && until && until < from) return alert("종료일이 시작일보다 빠릅니다.");
+        const obj = { id: old >= 0 ? list[old].id : mk(), type, start, end, note, weekdays: DAYS.filter((d) => dutyForm.days.has(d)), from, until, skip: old >= 0 ? list[old].skip || [] : [] };
+        if (old >= 0) list[old] = obj; else list.push(obj);
+      } else {
+        if (!dutyForm.dates.length) return alert("날짜를 하나 이상 추가해 주세요.");
+        dutyForm.dates.forEach((date, i) => {
+          const obj = { id: i === 0 && old >= 0 ? list[old].id : mk(), date, type, start, end, note };
+          if (i === 0 && old >= 0) list[old] = obj; else list.push(obj);
+        });
       }
-      box.innerHTML = state.scheduledDuties
-        .map(
-          (d) => `
-          <div class="inline-flex items-center gap-1.5 px-3 py-2 rounded-2xl theme-subtle border-accent-hover">
-            <button type="button" onclick="applyScheduledDutyToDay('${d.id}')" title="현재 선택된 날짜의 시간 흐름에 추가" class="cursor-pointer hover:underline text-left">
-              ${d.type.includes("급식") ? "🍽️" : "🚩"} <strong>${d.date}</strong> · <span class="font-bold">${escapeHtmlText(d.type)}</span> (${d.start}~${d.end})${d.note ? ` · ${escapeHtmlText(d.note)}` : ""}
-            </button>
-            <button type="button" onclick="deleteScheduledDuty('${d.id}')" title="사전등록 블록 삭제" class="ml-1 px-1.5 py-0.5 rounded-lg text-[11px] text-rose-700 hover:bg-rose-100 cursor-pointer">
-              ✕
-            </button>
-          </div>
-        `
-        )
-        .join("");
+      list.sort((a, b) => (a.date || "9999").localeCompare(b.date || "9999") || toMin(a.start) - toMin(b.start));
+      persist(); closeDutyForm(); renderDutyModal(); renderAll();
+    }
+    function deleteDuty(id) {
+      if (!confirm("이 업무를 삭제할까요?")) return;
+      state.scheduledDuties = (state.scheduledDuties || []).filter((d) => d.id !== id);
+      persist(); renderDutyModal(); renderAll();
+    }
+    function deleteDutyFromForm() { if (dutyForm.id) { deleteDuty(dutyForm.id); closeDutyForm(); } }
+    function skipDutyOnDay(id) {
+      const d = (state.scheduledDuties || []).find((x) => x.id === id), date = document.getElementById("selectedDate").value || todayISO();
+      if (!d || !confirm(`${date} 하루만 '${d.type}' 반복 업무에서 제외할까요?`)) return;
+      d.skip = (d.skip || []).concat(date); persist(); renderAll();
     }
 
     function playChime() {
@@ -1687,7 +1715,7 @@
     booted = true;
   </script>
 
-  <!-- Firebase 로그인 + 클라우드 동기화 (VERSION 6.2) : 데이터는 users/{내 uid}/ 아래에만 저장 -->
+  <!-- Firebase 로그인 + 클라우드 동기화 (VERSION 6.3) : 데이터는 users/{내 uid}/ 아래에만 저장 -->
   <script type="module">
     const clean = (o) => JSON.parse(JSON.stringify(o));
     const gateReady = (ok, msg) => window.__gate && window.__gate.ready(ok, msg);
@@ -1732,7 +1760,7 @@
         const { st, dateStr, dayObj } = latest; latest = null;
         try {
           const now = new Date().toISOString();
-          await setDoc(U("planner", "settings"), clean({ version: "6.2", theme: st.theme, alarmLead: st.alarmLead, periods: st.periods, routineBlocks: st.routineBlocks, timetable: st.timetable, classMemos: st.classMemos, scheduledDuties: st.scheduledDuties, stateUpdatedAt: st.updatedAt || now, updatedAt: now }), { merge: true });
+          await setDoc(U("planner", "settings"), clean({ version: "6.3", theme: st.theme, alarmLead: st.alarmLead, periods: st.periods, routineBlocks: st.routineBlocks, timetable: st.timetable, classMemos: st.classMemos, scheduledDuties: st.scheduledDuties, stateUpdatedAt: st.updatedAt || now, updatedAt: now }), { merge: true });
           await setDoc(U("days", dateStr), clean({ ...dayObj, updatedAt: now }), { merge: true });
         } catch (err) { console.warn("저장 오류:", err); }
       }
